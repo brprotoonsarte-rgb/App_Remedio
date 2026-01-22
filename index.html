@@ -32,22 +32,103 @@
         header {
             background: linear-gradient(135deg, #4a90e2 0%, #2c6cb0 100%);
             color: white;
-            padding: 25px 20px;
+            padding: 20px;
             text-align: center;
             border-radius: 0 0 25px 25px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .app-title {
+            text-align: left;
+            flex: 1;
+            min-width: 200px;
         }
         
         h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
+            font-size: 2rem;
+            margin-bottom: 5px;
             letter-spacing: 1px;
         }
         
         .subtitle {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             opacity: 0.9;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 12px 20px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            min-width: 250px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .user-profile:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .default-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid white;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .user-info {
+            text-align: left;
+        }
+        
+        .user-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .user-status {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            display: inline-block;
         }
         
         /* Botão principal */
@@ -716,7 +797,22 @@
             }
             
             header {
-                padding: 20px 15px;
+                padding: 15px;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .app-title {
+                text-align: center;
+            }
+            
+            .user-profile {
+                width: 100%;
+                justify-content: center;
+                min-width: auto;
             }
             
             h1 {
@@ -804,7 +900,24 @@
             }
             
             header {
-                padding: 15px 10px;
+                padding: 12px 10px;
+            }
+            
+            .user-profile {
+                padding: 10px 15px;
+            }
+            
+            .user-avatar, .default-avatar {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .user-name {
+                font-size: 1.1rem;
+            }
+            
+            .user-status {
+                font-size: 0.85rem;
             }
             
             .btn-add {
@@ -1019,12 +1132,166 @@
         .install-pwa-btn:hover {
             background-color: #F57C00;
         }
+        
+        /* Modal de perfil */
+        .profile-modal {
+            max-width: 500px;
+        }
+        
+        .profile-image-container {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .profile-image-upload {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            cursor: pointer;
+            position: relative;
+            border: 4px solid #4a90e2;
+            overflow: hidden;
+            background-color: #f0f7ff;
+        }
+        
+        .profile-image-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #4a90e2;
+            font-size: 1.2rem;
+        }
+        
+        .profile-image-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .profile-image-upload input {
+            display: none;
+        }
+        
+        .profile-image-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px;
+            font-size: 0.9rem;
+            text-align: center;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+        
+        .profile-image-upload:hover .profile-image-overlay {
+            transform: translateY(0);
+        }
+        
+        /* Botão editar perfil */
+        .btn-edit-profile {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        
+        .btn-edit-profile:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        /* Estatísticas do usuário */
+        .user-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            min-width: 100px;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1><i class="fas fa-pills"></i> Meus Remédios</h1>
-        <p class="subtitle">Controle seus medicamentos de forma simples</p>
+        <button class="btn-edit-profile" id="editProfileBtn" title="Editar Perfil">
+            <i class="fas fa-user-edit"></i>
+        </button>
+        
+        <div class="header-content">
+            <div class="app-title">
+                <h1><i class="fas fa-pills"></i> Meus Remédios</h1>
+                <p class="subtitle">Controle seus medicamentos de forma simples</p>
+            </div>
+            
+            <div class="user-profile" id="userProfile">
+                <div id="userAvatarContainer">
+                    <!-- Avatar será carregado aqui -->
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="userName">Usuário</div>
+                    <div class="user-status">
+                        <span class="status-dot"></span>
+                        <span id="userStatus">Online</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="user-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="totalRemedies">0</div>
+                <div class="stat-label">Remédios</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="takenToday">0</div>
+                <div class="stat-label">Tomados hoje</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="pendingToday">0</div>
+                <div class="stat-label">Pendentes</div>
+            </div>
+        </div>
     </header>
     
     <div class="container">
@@ -1170,6 +1437,48 @@
         </div>
     </div>
     
+    <!-- Modal para editar perfil -->
+    <div class="modal-overlay" id="profileModalOverlay">
+        <div class="modal profile-modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Editar Perfil</h2>
+                <button class="close-btn" id="closeProfileModalBtn">&times;</button>
+            </div>
+            
+            <form id="profileForm">
+                <div class="profile-image-container">
+                    <div class="profile-image-upload" id="profileImageUpload">
+                        <div id="profileImagePreviewContainer">
+                            <!-- Imagem de perfil será carregada aqui -->
+                        </div>
+                        <div class="profile-image-overlay">Clique para alterar</div>
+                        <input type="file" id="profileImageInput" accept="image/*">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userNameInput"><i class="fas fa-user"></i> Nome de Usuário</label>
+                    <input type="text" id="userNameInput" placeholder="Digite seu nome" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userEmail"><i class="fas fa-envelope"></i> E-mail (opcional)</label>
+                    <input type="email" id="userEmail" placeholder="seu@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="userPhone"><i class="fas fa-phone"></i> Telefone (opcional)</label>
+                    <input type="tel" id="userPhone" placeholder="(11) 99999-9999">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="cancelProfileBtn">Cancelar</button>
+                    <button type="submit" class="btn-save" id="saveProfileBtn">Salvar Perfil</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <!-- Alarm overlay -->
     <div class="alarm-overlay" id="alarmOverlay">
         <div class="alarm-container">
@@ -1218,6 +1527,12 @@
         let notificationPermission = Notification.permission;
         let scheduledTimeouts = [];
         let deferredPrompt = null;
+        let userProfile = {
+            name: "Usuário",
+            email: "",
+            phone: "",
+            avatar: null
+        };
         
         // Elementos DOM
         const addRemedyBtn = document.getElementById('addRemedyBtn');
@@ -1249,6 +1564,27 @@
         const resetBtn = document.getElementById('resetBtn');
         const installPwaBtn = document.getElementById('installPwaBtn');
         
+        // Elementos do perfil
+        const userProfileElement = document.getElementById('userProfile');
+        const userNameElement = document.getElementById('userName');
+        const userAvatarContainer = document.getElementById('userAvatarContainer');
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const profileModalOverlay = document.getElementById('profileModalOverlay');
+        const closeProfileModalBtn = document.getElementById('closeProfileModalBtn');
+        const cancelProfileBtn = document.getElementById('cancelProfileBtn');
+        const profileForm = document.getElementById('profileForm');
+        const userNameInput = document.getElementById('userNameInput');
+        const userEmailInput = document.getElementById('userEmail');
+        const userPhoneInput = document.getElementById('userPhone');
+        const profileImageUpload = document.getElementById('profileImageUpload');
+        const profileImageInput = document.getElementById('profileImageInput');
+        const profileImagePreviewContainer = document.getElementById('profileImagePreviewContainer');
+        
+        // Estatísticas
+        const totalRemediesElement = document.getElementById('totalRemedies');
+        const takenTodayElement = document.getElementById('takenToday');
+        const pendingTodayElement = document.getElementById('pendingToday');
+        
         // Configurações - APENAS NO FINAL
         const soundSelect = document.getElementById('soundSelect');
         const vibrationToggle = document.getElementById('vibrationToggle');
@@ -1264,6 +1600,7 @@
         // Inicializar a aplicação
         document.addEventListener('DOMContentLoaded', () => {
             loadRemedies();
+            loadUserProfile();
             loadSettings();
             setupEventListeners();
             checkCurrentTime();
@@ -1271,6 +1608,7 @@
             requestNotificationPermissionSilently();
             registerServiceWorker();
             checkPWAInstall();
+            updateUserStats();
             
             // Verificar permissão de notificação periodicamente
             setInterval(() => {
@@ -1287,6 +1625,9 @@
             testNotificationBtn.addEventListener('click', testNotification);
             testBackgroundNotificationBtn.addEventListener('click', testBackgroundNotification);
             installPwaBtn.addEventListener('click', installPWA);
+            editProfileBtn.addEventListener('click', openProfileModal);
+            closeProfileModalBtn.addEventListener('click', closeProfileModal);
+            cancelProfileBtn.addEventListener('click', closeProfileModal);
             
             // Alarm listeners
             snoozeBtn.addEventListener('click', snoozeAlarm);
@@ -1307,8 +1648,15 @@
                 }
             });
             
+            profileModalOverlay.addEventListener('click', (e) => {
+                if (e.target === profileModalOverlay) {
+                    closeProfileModal();
+                }
+            });
+            
             // Enviar formulário
             remedyForm.addEventListener('submit', saveRemedy);
+            profileForm.addEventListener('submit', saveUserProfile);
             
             // Upload de imagens
             imageUploadBox.addEventListener('click', () => imageInputBox.click());
@@ -1316,6 +1664,10 @@
             
             imageUploadPill.addEventListener('click', () => imageInputPill.click());
             imageInputPill.addEventListener('change', (e) => handleImageUpload(e, 'pill'));
+            
+            // Upload de imagem de perfil
+            profileImageUpload.addEventListener('click', () => profileImageInput.click());
+            profileImageInput.addEventListener('change', handleProfileImageUpload);
             
             // Notificação quando a página fica visível
             document.addEventListener('visibilitychange', () => {
@@ -1334,6 +1686,7 @@
             // Salvar estado antes de fechar
             window.addEventListener('beforeunload', () => {
                 saveRemediesToStorage();
+                saveUserProfileToStorage();
             });
             
             // Evento para instalação PWA
@@ -1348,6 +1701,129 @@
                 installPwaBtn.classList.remove('show');
                 showNotification('Aplicativo instalado com sucesso!', false);
             });
+        }
+        
+        // Carregar perfil do usuário
+        function loadUserProfile() {
+            const storedProfile = localStorage.getItem('userProfile');
+            if (storedProfile) {
+                try {
+                    userProfile = JSON.parse(storedProfile);
+                    updateProfileUI();
+                } catch (e) {
+                    console.error('Erro ao carregar perfil:', e);
+                }
+            }
+        }
+        
+        // Salvar perfil do usuário
+        function saveUserProfileToStorage() {
+            try {
+                localStorage.setItem('userProfile', JSON.stringify(userProfile));
+            } catch (e) {
+                console.error('Erro ao salvar perfil:', e);
+            }
+        }
+        
+        // Atualizar interface do perfil
+        function updateProfileUI() {
+            userNameElement.textContent = userProfile.name;
+            
+            // Atualizar avatar
+            if (userProfile.avatar) {
+                userAvatarContainer.innerHTML = `
+                    <img src="${userProfile.avatar}" alt="${userProfile.name}" class="user-avatar">
+                `;
+            } else {
+                userAvatarContainer.innerHTML = `
+                    <div class="default-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                `;
+            }
+        }
+        
+        // Abrir modal de perfil
+        function openProfileModal() {
+            userNameInput.value = userProfile.name;
+            userEmailInput.value = userProfile.email || '';
+            userPhoneInput.value = userProfile.phone || '';
+            
+            // Atualizar prévia da imagem de perfil
+            if (userProfile.avatar) {
+                profileImagePreviewContainer.innerHTML = `
+                    <img src="${userProfile.avatar}" alt="Foto de perfil" class="profile-image-preview">
+                `;
+            } else {
+                profileImagePreviewContainer.innerHTML = `
+                    <div class="profile-image-placeholder">
+                        <i class="fas fa-user"></i>
+                        <span>Adicionar foto</span>
+                    </div>
+                `;
+            }
+            
+            profileModalOverlay.classList.add('active');
+            setTimeout(() => userNameInput.focus(), 300);
+        }
+        
+        function closeProfileModal() {
+            profileModalOverlay.classList.remove('active');
+        }
+        
+        async function handleProfileImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.match('image.*')) {
+                showNotification('Por favor, selecione uma imagem.', true);
+                return;
+            }
+            
+            try {
+                const resizedImage = await resizeImage(file, 300, 300, 0.8);
+                userProfile.avatar = resizedImage;
+                
+                // Atualizar prévia
+                profileImagePreviewContainer.innerHTML = `
+                    <img src="${resizedImage}" alt="Foto de perfil" class="profile-image-preview">
+                `;
+            } catch (error) {
+                console.error('Erro ao processar imagem:', error);
+                showNotification('Erro ao processar a imagem. Tente novamente.', true);
+            }
+        }
+        
+        function saveUserProfile(e) {
+            e.preventDefault();
+            
+            const name = userNameInput.value.trim();
+            if (!name) {
+                showNotification('Por favor, digite seu nome.', true);
+                return;
+            }
+            
+            userProfile.name = name;
+            userProfile.email = userEmailInput.value.trim();
+            userProfile.phone = userPhoneInput.value.trim();
+            
+            saveUserProfileToStorage();
+            updateProfileUI();
+            closeProfileModal();
+            showNotification('Perfil atualizado com sucesso!', false);
+        }
+        
+        // Atualizar estatísticas do usuário
+        function updateUserStats() {
+            const today = new Date().toDateString();
+            
+            const total = remedies.length;
+            const takenToday = remedies.filter(r => r.takenToday && r.lastTakenDate === today).length;
+            const pendingToday = remedies.filter(r => !r.takenToday || r.lastTakenDate !== today).length;
+            
+            totalRemediesElement.textContent = total;
+            takenTodayElement.textContent = takenToday;
+            pendingTodayElement.textContent = pendingToday;
         }
         
         // Registrar Service Worker
@@ -1699,6 +2175,7 @@
             closeModal();
             checkCurrentTime();
             scheduleAllNotifications();
+            updateUserStats();
         }
         
         function markAsTaken(id) {
@@ -1726,6 +2203,7 @@
                 
                 saveRemediesToStorage();
                 renderRemedies();
+                updateUserStats();
             }
         }
         
@@ -1737,6 +2215,7 @@
                 showNotification('Remédio removido com sucesso!');
                 checkCurrentTime();
                 scheduleAllNotifications();
+                updateUserStats();
             }
         }
         
@@ -1755,6 +2234,7 @@
                 renderRemedies();
                 showNotification('Todos os remédios foram reiniciados para hoje!');
                 scheduleAllNotifications();
+                updateUserStats();
             }
         }
         
