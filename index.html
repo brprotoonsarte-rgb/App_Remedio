@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Meus Remédios</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -994,6 +996,29 @@
             text-align: center;
             margin-top: 25px;
         }
+        
+        /* Botão instalar PWA */
+        .install-pwa-btn {
+            background-color: #FF9800;
+            color: white;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 350px;
+            font-size: 1.5rem;
+            padding: 16px 20px;
+            display: none;
+        }
+        
+        .install-pwa-btn.show {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .install-pwa-btn:hover {
+            background-color: #F57C00;
+        }
     </style>
 </head>
 <body>
@@ -1015,6 +1040,9 @@
         <div class="reset-container">
             <button class="btn-reset" id="resetBtn">
                 <i class="fas fa-redo"></i> Reiniciar Remédios do Dia
+            </button>
+            <button class="btn-reset install-pwa-btn" id="installPwaBtn">
+                <i class="fas fa-download"></i> Instalar App
             </button>
         </div>
         
@@ -1070,6 +1098,9 @@
             <div class="test-notification-container">
                 <button class="btn-action test-notification" id="testNotificationBtn">
                     <i class="fas fa-play"></i> Testar Notificação
+                </button>
+                <button class="btn-action test-notification" id="testBackgroundNotificationBtn">
+                    <i class="fas fa-bell"></i> Testar Notificação em 2º Plano
                 </button>
             </div>
         </div>
@@ -1186,6 +1217,7 @@
         let activeAlarm = null;
         let notificationPermission = Notification.permission;
         let scheduledTimeouts = [];
+        let deferredPrompt = null;
         
         // Elementos DOM
         const addRemedyBtn = document.getElementById('addRemedyBtn');
@@ -1215,12 +1247,14 @@
         const alertText = document.getElementById('alertText');
         const saveBtn = document.getElementById('saveBtn');
         const resetBtn = document.getElementById('resetBtn');
+        const installPwaBtn = document.getElementById('installPwaBtn');
         
         // Configurações - APENAS NO FINAL
         const soundSelect = document.getElementById('soundSelect');
         const vibrationToggle = document.getElementById('vibrationToggle');
         const reminderTime = document.getElementById('reminderTime');
         const testNotificationBtn = document.getElementById('testNotificationBtn');
+        const testBackgroundNotificationBtn = document.getElementById('testBackgroundNotificationBtn');
         
         // Sons
         const bellSound = document.getElementById('bellSound');
@@ -1235,6 +1269,13 @@
             checkCurrentTime();
             startAlarmChecker();
             requestNotificationPermissionSilently();
+            registerServiceWorker();
+            checkPWAInstall();
+            
+            // Verificar permissão de notificação periodicamente
+            setInterval(() => {
+                notificationPermission = Notification.permission;
+            }, 60000);
         });
         
         // Configurar listeners de eventos
@@ -1244,6 +1285,8 @@
             cancelBtn.addEventListener('click', closeModal);
             resetBtn.addEventListener('click', resetDailyRemedies);
             testNotificationBtn.addEventListener('click', testNotification);
+            testBackgroundNotificationBtn.addEventListener('click', testBackgroundNotification);
+            installPwaBtn.addEventListener('click', installPWA);
             
             // Alarm listeners
             snoozeBtn.addEventListener('click', snoozeAlarm);
@@ -1278,13 +1321,62 @@
             document.addEventListener('visibilitychange', () => {
                 if (!document.hidden) {
                     checkCurrentTime();
+                    checkMissedAlarms();
                 }
             });
             
             // Quando o app ganha foco
             window.addEventListener('focus', () => {
                 checkCurrentTime();
+                checkMissedAlarms();
             });
+            
+            // Salvar estado antes de fechar
+            window.addEventListener('beforeunload', () => {
+                saveRemediesToStorage();
+            });
+            
+            // Evento para instalação PWA
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installPwaBtn.classList.add('show');
+            });
+            
+            window.addEventListener('appinstalled', () => {
+                deferredPrompt = null;
+                installPwaBtn.classList.remove('show');
+                showNotification('Aplicativo instalado com sucesso!', false);
+            });
+        }
+        
+        // Registrar Service Worker
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(error => {
+                    console.log('Service Worker registration failed:', error);
+                });
+            }
+        }
+        
+        // Verificar instalação PWA
+        function checkPWAInstall() {
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                installPwaBtn.classList.remove('show');
+            }
+        }
+        
+        // Instalar PWA
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('Usuário aceitou a instalação');
+                    }
+                    deferredPrompt = null;
+                });
+            }
         }
         
         // Solicitar permissão silenciosamente (sem mostrar banner)
@@ -1301,6 +1393,7 @@
             // Limpar notificações anteriores
             clearScheduledNotifications();
             
+            // Verificar se temos permissão para notificações
             if (notificationPermission !== 'granted') {
                 return;
             }
@@ -1332,7 +1425,7 @@
             
             if (delay > 0 && delay < 24 * 60 * 60 * 1000) { // Apenas agendar se for dentro de 24 horas
                 const timeoutId = setTimeout(() => {
-                    showPushNotification(remedy);
+                    triggerNotification(remedy);
                 }, delay);
                 
                 scheduledTimeouts.push({
@@ -1351,6 +1444,60 @@
             scheduledTimeouts = [];
         }
         
+        // Acionar notificação (esta função é chamada quando o timer dispara)
+        function triggerNotification(remedy) {
+            // Primeiro verificar se a página está visível
+            if (!document.hidden) {
+                // Se a página está visível, mostrar o alarme na tela
+                showAlarm(remedy);
+            } else {
+                // Se a página está em segundo plano, mostrar notificação push
+                showPushNotification(remedy);
+            }
+            
+            // Também podemos salvar no localStorage para verificação posterior
+            savePendingNotification(remedy);
+            
+            // Reprogramar para amanhã
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const reminderMinutes = parseInt(reminderTime.value);
+            scheduleNotificationForRemedy(remedy, tomorrow, reminderMinutes);
+        }
+        
+        // Salvar notificação pendente no localStorage
+        function savePendingNotification(remedy) {
+            const pendingNotifications = JSON.parse(localStorage.getItem('pendingNotifications') || '[]');
+            const notification = {
+                id: remedy.id,
+                name: remedy.name,
+                quantity: remedy.quantity,
+                time: remedy.time,
+                timestamp: Date.now()
+            };
+            pendingNotifications.push(notification);
+            localStorage.setItem('pendingNotifications', JSON.stringify(pendingNotifications.slice(-10))); // Manter apenas as últimas 10
+        }
+        
+        // Verificar notificações perdidas quando o app é aberto
+        function checkMissedAlarms() {
+            const pendingNotifications = JSON.parse(localStorage.getItem('pendingNotifications') || '[]');
+            const now = Date.now();
+            const fiveMinutesAgo = now - (5 * 60 * 1000);
+            
+            // Filtrar notificações dos últimos 5 minutos
+            const recentNotifications = pendingNotifications.filter(notif => notif.timestamp > fiveMinutesAgo);
+            
+            if (recentNotifications.length > 0) {
+                // Mostrar uma notificação resumida
+                const remedyNames = recentNotifications.map(notif => notif.name).join(', ');
+                showNotification(`Você tem ${recentNotifications.length} remédio(s) para tomar agora: ${remedyNames}`, false, 'warning');
+                
+                // Limpar notificações mostradas
+                localStorage.setItem('pendingNotifications', JSON.stringify([]));
+            }
+        }
+        
         // Mostrar notificação push
         function showPushNotification(remedy) {
             if (notificationPermission !== 'granted') return;
@@ -1359,8 +1506,18 @@
                 body: `Hora de tomar ${remedy.name} - ${remedy.quantity} às ${formatTime(remedy.time)}`,
                 icon: 'https://cdn-icons-png.flaticon.com/512/3145/3145760.png',
                 tag: `remedy-${remedy.id}-${Date.now()}`,
-                requireInteraction: false,
-                vibrate: vibrationToggle.checked ? [200, 100, 200, 100, 200] : []
+                requireInteraction: true,
+                vibrate: vibrationToggle.checked ? [200, 100, 200, 100, 200] : [],
+                actions: [
+                    {
+                        action: 'snooze',
+                        title: 'Adiar 5 min'
+                    },
+                    {
+                        action: 'dismiss',
+                        title: 'Já tomei'
+                    }
+                ]
             };
             
             const notification = new Notification('HORA DO REMÉDIO!', options);
@@ -1375,12 +1532,6 @@
             setTimeout(() => {
                 notification.close();
             }, 30000);
-            
-            // Reprogramar para amanhã
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const reminderMinutes = parseInt(reminderTime.value);
-            scheduleNotificationForRemedy(remedy, tomorrow, reminderMinutes);
         }
         
         // Abrir modal para adicionar remédio
@@ -1638,8 +1789,57 @@
                 time: new Date().toTimeString().slice(0,5)
             };
             
+            // Testar notificação push
             showPushNotification(testRemedy);
-            showNotification('Notificação de teste enviada!', false);
+            
+            // Também mostrar na tela para confirmação
+            showNotification('Notificação de teste enviada! Verifique se chegou.', false);
+        }
+        
+        // Testar notificação em segundo plano
+        function testBackgroundNotification() {
+            if (!('Notification' in window)) {
+                showNotification('Seu navegador não suporta notificações.', true);
+                return;
+            }
+            
+            if (Notification.permission === 'denied') {
+                showNotification('Permissão para notificações foi negada. Por favor, permita nas configurações do seu navegador.', true);
+                return;
+            }
+            
+            if (Notification.permission === 'default') {
+                // Solicitar permissão
+                Notification.requestPermission().then(permission => {
+                    notificationPermission = permission;
+                    if (permission === 'granted') {
+                        showNotification('Notificações ativadas! Agora você pode testar.', false);
+                        scheduleAllNotifications();
+                    }
+                });
+                return;
+            }
+            
+            // Já tem permissão, simular uma notificação em segundo plano
+            const testRemedy = {
+                id: 'test-bg',
+                name: "Remédio de Teste (2º Plano)",
+                quantity: "1 comprimido",
+                time: new Date().toTimeString().slice(0,5)
+            };
+            
+            // Simular uma notificação que seria acionada em segundo plano
+            setTimeout(() => {
+                // Esta é a função que seria chamada quando o timer disparar
+                if (document.hidden) {
+                    // Simular comportamento em segundo plano
+                    showPushNotification(testRemedy);
+                    showNotification('Notificação de segundo plano simulada! Minimize o app para testar.', false, 'warning');
+                } else {
+                    // Se o app está em primeiro plano, mostrar alarme
+                    showAlarm(testRemedy);
+                }
+            }, 1000);
         }
         
         function renderRemedies() {
