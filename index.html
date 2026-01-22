@@ -122,17 +122,20 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            z-index: 1;
         }
         
         .remedy-header {
             display: flex;
             align-items: center;
             margin-bottom: 15px;
+            flex-wrap: wrap;
         }
         
         .remedy-image {
             width: 80px;
             height: 80px;
+            min-width: 80px;
             border-radius: 10px;
             object-fit: cover;
             margin-right: 20px;
@@ -142,6 +145,7 @@
         .default-image {
             width: 80px;
             height: 80px;
+            min-width: 80px;
             border-radius: 10px;
             margin-right: 20px;
             background-color: #e6f2ff;
@@ -149,6 +153,7 @@
             align-items: center;
             justify-content: center;
             border: 3px solid #f0f7ff;
+            flex-shrink: 0;
         }
         
         .default-image i {
@@ -161,6 +166,8 @@
             font-weight: bold;
             color: #2c6cb0;
             flex: 1;
+            min-width: 150px;
+            word-break: break-word;
         }
         
         .remedy-info {
@@ -192,14 +199,15 @@
         
         .remedy-actions {
             display: flex;
+            flex-wrap: wrap;
             justify-content: flex-end;
-            gap: 15px;
+            gap: 10px;
             padding-top: 15px;
             border-top: 1px solid #eee;
         }
         
         .btn-action {
-            padding: 12px 20px;
+            padding: 12px 15px;
             border: none;
             border-radius: 10px;
             font-size: 1.4rem;
@@ -209,6 +217,10 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+            min-height: 50px;
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
         }
         
         .btn-taken {
@@ -228,6 +240,7 @@
         
         .btn-action i {
             margin-right: 8px;
+            font-size: 1.4rem;
         }
         
         .btn-action:hover, .btn-action:active {
@@ -368,7 +381,8 @@
         
         .modal-actions {
             display: flex;
-            gap: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
             margin-top: 30px;
         }
         
@@ -383,6 +397,8 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
+            min-height: 60px;
+            min-width: 140px;
         }
         
         .btn-cancel {
@@ -396,6 +412,8 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
+            min-height: 60px;
+            min-width: 140px;
         }
         
         .btn-save:hover, .btn-save:active {
@@ -424,8 +442,16 @@
             margin-right: 15px;
         }
         
-        /* Responsividade */
-        @media (max-width: 600px) {
+        /* Responsividade melhorada */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            header {
+                padding: 20px 15px;
+            }
+            
             h1 {
                 font-size: 1.9rem;
             }
@@ -437,10 +463,23 @@
             .btn-add {
                 padding: 20px;
                 font-size: 1.6rem;
+                margin: 20px auto 30px;
             }
             
             .remedy-name {
                 font-size: 1.6rem;
+                margin-top: 10px;
+                width: 100%;
+            }
+            
+            .remedy-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .remedy-image, .default-image {
+                margin-right: 0;
+                margin-bottom: 15px;
             }
             
             .info-item {
@@ -454,27 +493,100 @@
             .modal-title {
                 font-size: 1.7rem;
             }
+            
+            .remedy-actions {
+                justify-content: center;
+            }
+            
+            .btn-action {
+                flex: 1 1 calc(50% - 10px);
+                min-width: 120px;
+                font-size: 1.3rem;
+                padding: 12px 10px;
+            }
+            
+            .btn-action i {
+                margin-right: 5px;
+            }
         }
         
-        @media (max-width: 400px) {
-            .container {
-                padding: 15px;
-            }
-            
-            header {
-                padding: 20px 15px;
-            }
-            
+        @media (max-width: 480px) {
             h1 {
                 font-size: 1.7rem;
             }
             
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 15px 10px;
+            }
+            
+            .btn-add {
+                width: 95%;
+                padding: 18px;
+                font-size: 1.5rem;
+            }
+            
+            .remedy-card {
+                padding: 15px;
+            }
+            
+            .btn-action {
+                flex: 1 1 100%;
+                margin-bottom: 5px;
+                min-width: 100%;
+                font-size: 1.4rem;
+                padding: 14px 10px;
+            }
+            
             .remedy-actions {
                 flex-direction: column;
+                gap: 8px;
             }
             
             .modal-actions {
                 flex-direction: column;
+            }
+            
+            .btn-save, .btn-cancel {
+                width: 100%;
+                min-width: 100%;
+            }
+            
+            .remedy-image, .default-image {
+                width: 70px;
+                height: 70px;
+                min-width: 70px;
+            }
+            
+            .info-value {
+                font-size: 1.4rem;
+            }
+            
+            .info-label {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 320px) {
+            .btn-action {
+                font-size: 1.3rem;
+                padding: 12px 8px;
+            }
+            
+            .btn-action i {
+                margin-right: 3px;
+                font-size: 1.2rem;
+            }
+            
+            .remedy-name {
+                font-size: 1.4rem;
+            }
+            
+            .info-value {
+                font-size: 1.3rem;
             }
         }
         
@@ -492,28 +604,32 @@
         .notification {
             position: fixed;
             bottom: 20px;
+            left: 20px;
             right: 20px;
             background-color: #4CAF50;
             color: white;
-            padding: 15px 25px;
+            padding: 15px;
             border-radius: 10px;
             font-size: 1.4rem;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             z-index: 1001;
             display: flex;
             align-items: center;
+            justify-content: center;
             animation: slideIn 0.3s ease-out;
-            max-width: 350px;
+            max-width: calc(100% - 40px);
+            text-align: center;
         }
         
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         
         .notification i {
             margin-right: 10px;
             font-size: 1.6rem;
+            flex-shrink: 0;
         }
         
         .notification.error {
@@ -561,18 +677,45 @@
             color: white;
             border: none;
             border-radius: 10px;
-            padding: 15px 25px;
+            padding: 15px 20px;
             font-size: 1.5rem;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
             transition: all 0.3s;
+            width: 100%;
+            max-width: 350px;
+            min-height: 60px;
         }
         
         .btn-reset:hover {
             background-color: #1976D2;
             transform: translateY(-2px);
+        }
+        
+        @media (max-width: 480px) {
+            .btn-reset {
+                font-size: 1.3rem;
+                padding: 12px 15px;
+                min-height: 55px;
+            }
+            
+            .notification {
+                font-size: 1.3rem;
+                padding: 12px;
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+                max-width: calc(100% - 20px);
+            }
+        }
+        
+        /* Garantir que textos longos não quebrem layout */
+        .text-wrap {
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
     </style>
 </head>
@@ -766,7 +909,7 @@
         }
         
         // Função para redimensionar imagem
-        function resizeImage(file, maxWidth = 400, maxHeight = 400, quality = 0.6) {
+        function resizeImage(file, maxWidth = 300, maxHeight = 300, quality = 0.5) {
             return new Promise((resolve, reject) => {
                 // Verificar se é uma imagem
                 if (!file.type.match('image.*')) {
@@ -833,7 +976,7 @@
             
             try {
                 // Sempre redimensionar para economizar espaço
-                currentImageBase64 = await resizeImage(file, 300, 300, 0.5);
+                currentImageBase64 = await resizeImage(file, 250, 250, 0.5);
                 
             } catch (error) {
                 console.error('Erro ao processar imagem:', error);
@@ -964,6 +1107,8 @@
             remedyList.innerHTML = remedies.map(remedy => {
                 const today = new Date().toDateString();
                 const isTakenToday = remedy.takenToday && remedy.lastTakenDate === today;
+                const buttonText = isTakenToday ? 'Desmarcar' : 'Tomar';
+                const buttonIcon = isTakenToday ? 'fa-undo' : 'fa-check';
                 
                 return `
                 <div class="remedy-card ${isTakenToday ? 'taken' : ''}" id="remedy-${remedy.id}">
@@ -978,7 +1123,7 @@
                             `<img src="${remedy.image}" alt="${remedy.name}" class="remedy-image">` : 
                             `<div class="default-image"><i class="fas fa-pills"></i></div>`
                         }
-                        <div class="remedy-name">${remedy.name}</div>
+                        <div class="remedy-name text-wrap">${remedy.name}</div>
                     </div>
                     
                     <div class="remedy-info">
@@ -993,13 +1138,13 @@
                     </div>
                     
                     <div class="remedy-actions">
-                        <button class="btn-action ${isTakenToday ? 'btn-taken' : 'btn-taken'}" onclick="markAsTaken('${remedy.id}')">
-                            <i class="fas ${isTakenToday ? 'fa-undo' : 'fa-check'}"></i> ${isTakenToday ? 'Desmarcar' : 'Tomar'}
+                        <button class="btn-action btn-taken" onclick="markAsTaken('${remedy.id}')" title="${buttonText} este remédio">
+                            <i class="fas ${buttonIcon}"></i> ${buttonText}
                         </button>
-                        <button class="btn-action btn-edit" onclick="openEditModal('${remedy.id}')">
+                        <button class="btn-action btn-edit" onclick="openEditModal('${remedy.id}')" title="Editar este remédio">
                             <i class="fas fa-edit"></i> Editar
                         </button>
-                        <button class="btn-action btn-delete" onclick="deleteRemedy('${remedy.id}')">
+                        <button class="btn-action btn-delete" onclick="deleteRemedy('${remedy.id}')" title="Excluir este remédio">
                             <i class="fas fa-trash-alt"></i> Excluir
                         </button>
                     </div>
@@ -1095,7 +1240,7 @@
                     remedies = JSON.parse(storedRemedies);
                     // Limpar imagens muito antigas ou corrompidas para evitar problemas
                     remedies.forEach(remedy => {
-                        if (remedy.image && remedy.image.length > 100000) { // Se a imagem for muito grande
+                        if (remedy.image && remedy.image.length > 50000) { // Se a imagem for muito grande
                             remedy.image = null; // Remover imagem para evitar problemas
                         }
                     });
@@ -1116,7 +1261,7 @@
                 const remediesToSave = remedies.map(remedy => {
                     const remedyCopy = {...remedy};
                     // Se a imagem for muito grande, não salvar
-                    if (remedyCopy.image && remedyCopy.image.length > 50000) {
+                    if (remedyCopy.image && remedyCopy.image.length > 40000) {
                         remedyCopy.image = null;
                     }
                     return remedyCopy;
