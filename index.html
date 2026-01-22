@@ -48,98 +48,6 @@
             opacity: 0.9;
         }
         
-        /* Configurações */
-        .settings-container {
-            background-color: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-        }
-        
-        .settings-title {
-            font-size: 1.8rem;
-            color: #2c6cb0;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .settings-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        
-        .setting-item {
-            flex: 1;
-            min-width: 200px;
-        }
-        
-        .setting-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.4rem;
-            margin-bottom: 10px;
-            color: #444;
-        }
-        
-        .setting-control {
-            width: 100%;
-            padding: 12px;
-            font-size: 1.4rem;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            background-color: #f9f9f9;
-        }
-        
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 30px;
-        }
-        
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 22px;
-            width: 22px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        
-        input:checked + .toggle-slider {
-            background-color: #4CAF50;
-        }
-        
-        input:checked + .toggle-slider:before {
-            transform: translateX(30px);
-        }
-        
         /* Botão principal */
         .btn-add {
             display: block;
@@ -363,6 +271,100 @@
         .btn-action:hover, .btn-action:active {
             opacity: 0.9;
             transform: scale(1.03);
+        }
+        
+        /* Configurações - NOVO LOCAL (final da página) */
+        .settings-container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 40px 0 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border-top: 5px solid #4a90e2;
+        }
+        
+        .settings-title {
+            font-size: 1.8rem;
+            color: #2c6cb0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .settings-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+        }
+        
+        .setting-item {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .setting-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            color: #444;
+            font-weight: 600;
+        }
+        
+        .setting-control {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.5rem;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 70px;
+            height: 34px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #4CAF50;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(36px);
         }
         
         /* Modal */
@@ -779,6 +781,15 @@
             .alarm-message {
                 font-size: 1.6rem;
             }
+            
+            .settings-options {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .setting-item {
+                min-width: 100%;
+            }
         }
         
         @media (max-width: 480px) {
@@ -845,6 +856,33 @@
             
             .btn-alarm {
                 width: 100%;
+            }
+            
+            .settings-container {
+                padding: 20px 15px;
+            }
+            
+            .setting-label {
+                font-size: 1.4rem;
+            }
+            
+            .setting-control {
+                font-size: 1.4rem;
+                padding: 12px;
+            }
+            
+            .toggle-switch {
+                width: 60px;
+                height: 30px;
+            }
+            
+            .toggle-slider:before {
+                height: 22px;
+                width: 22px;
+            }
+            
+            input:checked + .toggle-slider:before {
+                transform: translateX(30px);
             }
         }
         
@@ -941,11 +979,20 @@
         .test-notification {
             background-color: #9C27B0;
             color: white;
-            margin-top: 10px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 350px;
+            font-size: 1.5rem;
+            padding: 16px 20px;
         }
         
         .test-notification:hover {
             background-color: #7B1FA2;
+        }
+        
+        .test-notification-container {
+            text-align: center;
+            margin-top: 25px;
         }
     </style>
 </head>
@@ -956,7 +1003,31 @@
     </header>
     
     <div class="container">
-        <!-- Configurações de Notificação -->
+        <button class="btn-add" id="addRemedyBtn">
+            <i class="fas fa-plus-circle"></i> Adicionar Remédio
+        </button>
+        
+        <div id="timeAlert" class="time-alert hidden">
+            <i class="fas fa-bell"></i>
+            <span id="alertText">Hora de tomar seu remédio!</span>
+        </div>
+        
+        <div class="reset-container">
+            <button class="btn-reset" id="resetBtn">
+                <i class="fas fa-redo"></i> Reiniciar Remédios do Dia
+            </button>
+        </div>
+        
+        <div class="remedy-list" id="remedyList">
+            <!-- Os remédios serão carregados aqui -->
+            <div class="empty-message">
+                <i class="fas fa-capsules" style="font-size: 3rem; margin-bottom: 15px; color: #4a90e2;"></i>
+                <p>Você ainda não adicionou nenhum remédio.</p>
+                <p>Clique no botão acima para adicionar o primeiro.</p>
+            </div>
+        </div>
+        
+        <!-- Configurações de Notificação - NOVO LOCAL (final da página) -->
         <div class="settings-container">
             <h2 class="settings-title">
                 <i class="fas fa-bell"></i> Configurações de Notificação
@@ -995,34 +1066,10 @@
                     </select>
                 </div>
             </div>
-            <div style="margin-top: 20px; text-align: center;">
+            <div class="test-notification-container">
                 <button class="btn-action test-notification" id="testNotificationBtn">
                     <i class="fas fa-play"></i> Testar Notificação
                 </button>
-            </div>
-        </div>
-        
-        <button class="btn-add" id="addRemedyBtn">
-            <i class="fas fa-plus-circle"></i> Adicionar Remédio
-        </button>
-        
-        <div id="timeAlert" class="time-alert hidden">
-            <i class="fas fa-bell"></i>
-            <span id="alertText">Hora de tomar seu remédio!</span>
-        </div>
-        
-        <div class="reset-container">
-            <button class="btn-reset" id="resetBtn">
-                <i class="fas fa-redo"></i> Reiniciar Remédios do Dia
-            </button>
-        </div>
-        
-        <div class="remedy-list" id="remedyList">
-            <!-- Os remédios serão carregados aqui -->
-            <div class="empty-message">
-                <i class="fas fa-capsules" style="font-size: 3rem; margin-bottom: 15px; color: #4a90e2;"></i>
-                <p>Você ainda não adicionou nenhum remédio.</p>
-                <p>Clique no botão acima para adicionar o primeiro.</p>
             </div>
         </div>
     </div>
@@ -1173,7 +1220,7 @@
         const snoozeBtn = document.getElementById('snoozeBtn');
         const dismissBtn = document.getElementById('dismissBtn');
         
-        // Configurações
+        // Configurações - AGORA NO FINAL
         const soundSelect = document.getElementById('soundSelect');
         const vibrationToggle = document.getElementById('vibrationToggle');
         const reminderTime = document.getElementById('reminderTime');
