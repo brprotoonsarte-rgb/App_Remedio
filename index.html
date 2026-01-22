@@ -104,6 +104,26 @@
             border-left: 8px solid #4a90e2;
         }
         
+        .remedy-card.taken {
+            border-left-color: #4CAF50;
+            opacity: 0.8;
+            background-color: #f8fff8;
+        }
+        
+        .taken-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
         .remedy-header {
             display: flex;
             align-items: center;
@@ -189,6 +209,11 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+        }
+        
+        .btn-taken {
+            background-color: #4CAF50;
+            color: white;
         }
         
         .btn-edit {
@@ -334,7 +359,7 @@
         
         .image-preview {
             width: 100%;
-            max-height: 200px;
+            max-height: 150px;
             object-fit: contain;
             border-radius: 10px;
             margin-top: 15px;
@@ -524,6 +549,31 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        /* Botão de reset diário */
+        .reset-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .btn-reset {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 25px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        
+        .btn-reset:hover {
+            background-color: #1976D2;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -540,6 +590,12 @@
         <div id="timeAlert" class="time-alert hidden">
             <i class="fas fa-bell"></i>
             <span id="alertText">Hora de tomar seu remédio!</span>
+        </div>
+        
+        <div class="reset-container">
+            <button class="btn-reset" id="resetBtn">
+                <i class="fas fa-redo"></i> Reiniciar Remédios do Dia
+            </button>
         </div>
         
         <div class="remedy-list" id="remedyList">
@@ -587,10 +643,6 @@
                     </div>
                     <input type="file" id="imageInput" accept="image/*" class="hidden">
                     <img id="imagePreview" class="image-preview" alt="Pré-visualização da imagem">
-                    <div id="imageProcessing" class="hidden" style="text-align: center; margin-top: 15px;">
-                        <div class="loading"></div>
-                        <span style="font-size: 1.4rem;">Redimensionando imagem...</span>
-                    </div>
                 </div>
                 
                 <div class="modal-actions">
@@ -612,7 +664,6 @@
         let remedies = [];
         let currentEditId = null;
         let currentImageBase64 = null;
-        let isProcessingImage = false;
         
         // Elementos DOM
         const addRemedyBtn = document.getElementById('addRemedyBtn');
@@ -629,12 +680,12 @@
         const imageUpload = document.getElementById('imageUpload');
         const imageInput = document.getElementById('imageInput');
         const imagePreview = document.getElementById('imagePreview');
-        const imageProcessing = document.getElementById('imageProcessing');
         const notification = document.getElementById('notification');
         const notificationText = document.getElementById('notificationText');
         const timeAlert = document.getElementById('timeAlert');
         const alertText = document.getElementById('alertText');
         const saveBtn = document.getElementById('saveBtn');
+        const resetBtn = document.getElementById('resetBtn');
         
         // Inicializar a aplicação
         document.addEventListener('DOMContentLoaded', () => {
@@ -650,6 +701,7 @@
             addRemedyBtn.addEventListener('click', openAddModal);
             closeModalBtn.addEventListener('click', closeModal);
             cancelBtn.addEventListener('click', closeModal);
+            resetBtn.addEventListener('click', resetDailyRemedies);
             
             // Fechar modal ao clicar fora
             modalOverlay.addEventListener('click', (e) => {
@@ -662,11 +714,7 @@
             remedyForm.addEventListener('submit', saveRemedy);
             
             // Upload de imagem
-            imageUpload.addEventListener('click', () => {
-                if (!isProcessingImage) {
-                    imageInput.click();
-                }
-            });
+            imageUpload.addEventListener('click', () => imageInput.click());
             imageInput.addEventListener('change', handleImageUpload);
         }
         
@@ -678,8 +726,7 @@
             remedyForm.reset();
             imagePreview.style.display = 'none';
             imagePreview.src = '';
-            imageProcessing.classList.add('hidden');
-            isProcessingImage = false;
+            imageInput.value = '';
             modalOverlay.classList.add('active');
             // Focar no primeiro campo
             setTimeout(() => remedyNameInput.focus(), 300);
@@ -700,7 +747,7 @@
             remedyTimeInput.value = remedy.time;
             
             // Tratar imagem
-            if (remedy.image) {
+            if (remedy.image && remedy.image !== 'compressed') {
                 currentImageBase64 = remedy.image;
                 imagePreview.src = remedy.image;
                 imagePreview.style.display = 'block';
@@ -709,21 +756,17 @@
                 imagePreview.style.display = 'none';
             }
             
-            imageProcessing.classList.add('hidden');
-            isProcessingImage = false;
             modalOverlay.classList.add('active');
             setTimeout(() => remedyNameInput.focus(), 300);
         }
         
         // Fechar modal
         function closeModal() {
-            if (!isProcessingImage) {
-                modalOverlay.classList.remove('active');
-            }
+            modalOverlay.classList.remove('active');
         }
         
         // Função para redimensionar imagem
-        function resizeImage(file, maxWidth = 800, maxHeight = 800, quality = 0.8) {
+        function resizeImage(file, maxWidth = 400, maxHeight = 400, quality = 0.6) {
             return new Promise((resolve, reject) => {
                 // Verificar se é uma imagem
                 if (!file.type.match('image.*')) {
@@ -780,55 +823,22 @@
                 return;
             }
             
-            // Mostrar mensagem de processamento
-            imageProcessing.classList.remove('hidden');
-            imagePreview.style.display = 'none';
-            isProcessingImage = true;
-            saveBtn.disabled = true;
+            // Mostrar prévia imediatamente com uma versão temporária
+            const tempReader = new FileReader();
+            tempReader.onload = (event) => {
+                imagePreview.src = event.target.result;
+                imagePreview.style.display = 'block';
+            };
+            tempReader.readAsDataURL(file);
             
             try {
-                // Redimensionar imagem se for muito grande
-                let base64Image;
-                
-                if (file.size > 2 * 1024 * 1024) { // Se maior que 2MB
-                    showNotification('Imagem muito grande, redimensionando...', false, 'warning');
-                    
-                    // Ajustar qualidade baseado no tamanho original
-                    let quality = 0.7;
-                    if (file.size > 5 * 1024 * 1024) { // Se maior que 5MB
-                        quality = 0.5;
-                    }
-                    if (file.size > 10 * 1024 * 1024) { // Se maior que 10MB
-                        quality = 0.3;
-                    }
-                    
-                    base64Image = await resizeImage(file, 800, 800, quality);
-                    showNotification('Imagem redimensionada com sucesso!', false);
-                } else {
-                    // Se a imagem já é pequena, converter normalmente
-                    base64Image = await new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onload = (event) => resolve(event.target.result);
-                        reader.onerror = reject;
-                        reader.readAsDataURL(file);
-                    });
-                }
-                
-                currentImageBase64 = base64Image;
-                imagePreview.src = base64Image;
-                imagePreview.style.display = 'block';
+                // Sempre redimensionar para economizar espaço
+                currentImageBase64 = await resizeImage(file, 300, 300, 0.5);
                 
             } catch (error) {
                 console.error('Erro ao processar imagem:', error);
                 showNotification('Erro ao processar a imagem. Tente novamente.', true);
                 currentImageBase64 = null;
-                imagePreview.style.display = 'none';
-            } finally {
-                // Esconder mensagem de processamento
-                imageProcessing.classList.add('hidden');
-                isProcessingImage = false;
-                saveBtn.disabled = false;
-                imageInput.value = ''; // Resetar input
             }
         }
         
@@ -836,18 +846,15 @@
         function saveRemedy(e) {
             e.preventDefault();
             
-            if (isProcessingImage) {
-                showNotification('Aguarde o processamento da imagem...', false, 'warning');
-                return;
-            }
-            
             // Coletar dados do formulário
             const remedyData = {
                 id: currentEditId || Date.now().toString(),
                 name: remedyNameInput.value.trim(),
                 quantity: remedyQuantityInput.value.trim(),
                 time: remedyTimeInput.value,
-                image: currentImageBase64
+                image: currentImageBase64 || null,
+                takenToday: false,
+                lastTakenDate: null
             };
             
             // Validar dados
@@ -861,6 +868,9 @@
                 // Atualizar remédio existente
                 const index = remedies.findIndex(r => r.id === currentEditId);
                 if (index !== -1) {
+                    // Manter o status de tomado se já estava
+                    remedyData.takenToday = remedies[index].takenToday;
+                    remedyData.lastTakenDate = remedies[index].lastTakenDate;
                     remedies[index] = remedyData;
                     showNotification('Remédio atualizado com sucesso!');
                 }
@@ -877,6 +887,29 @@
             checkCurrentTime();
         }
         
+        // Marcar remédio como tomado
+        function markAsTaken(id) {
+            const remedy = remedies.find(r => r.id === id);
+            if (remedy) {
+                const today = new Date().toDateString();
+                
+                // Se já foi tomado hoje, desmarcar
+                if (remedy.takenToday && remedy.lastTakenDate === today) {
+                    remedy.takenToday = false;
+                    remedy.lastTakenDate = null;
+                    showNotification(`${remedy.name} marcado como NÃO tomado`);
+                } else {
+                    // Marcar como tomado hoje
+                    remedy.takenToday = true;
+                    remedy.lastTakenDate = today;
+                    showNotification(`${remedy.name} marcado como TOMADO!`);
+                }
+                
+                saveRemediesToStorage();
+                renderRemedies();
+            }
+        }
+        
         // Excluir remédio
         function deleteRemedy(id) {
             if (confirm('Tem certeza que deseja remover este remédio?')) {
@@ -885,6 +918,25 @@
                 renderRemedies();
                 showNotification('Remédio removido com sucesso!');
                 checkCurrentTime();
+            }
+        }
+        
+        // Reiniciar remédios do dia
+        function resetDailyRemedies() {
+            if (confirm('Deseja reiniciar todos os remédios para hoje? Isso marcará todos como não tomados.')) {
+                const today = new Date().toDateString();
+                
+                remedies.forEach(remedy => {
+                    // Só resetar se foi tomado hoje
+                    if (remedy.lastTakenDate === today) {
+                        remedy.takenToday = false;
+                        remedy.lastTakenDate = null;
+                    }
+                });
+                
+                saveRemediesToStorage();
+                renderRemedies();
+                showNotification('Todos os remédios foram reiniciados para hoje!');
             }
         }
         
@@ -909,8 +961,18 @@
             });
             
             // Gerar HTML dos remédios
-            remedyList.innerHTML = remedies.map(remedy => `
-                <div class="remedy-card" id="remedy-${remedy.id}">
+            remedyList.innerHTML = remedies.map(remedy => {
+                const today = new Date().toDateString();
+                const isTakenToday = remedy.takenToday && remedy.lastTakenDate === today;
+                
+                return `
+                <div class="remedy-card ${isTakenToday ? 'taken' : ''}" id="remedy-${remedy.id}">
+                    ${isTakenToday ? 
+                        `<div class="taken-badge">
+                            <i class="fas fa-check"></i> Tomado
+                        </div>` : ''
+                    }
+                    
                     <div class="remedy-header">
                         ${remedy.image ? 
                             `<img src="${remedy.image}" alt="${remedy.name}" class="remedy-image">` : 
@@ -931,6 +993,9 @@
                     </div>
                     
                     <div class="remedy-actions">
+                        <button class="btn-action ${isTakenToday ? 'btn-taken' : 'btn-taken'}" onclick="markAsTaken('${remedy.id}')">
+                            <i class="fas ${isTakenToday ? 'fa-undo' : 'fa-check'}"></i> ${isTakenToday ? 'Desmarcar' : 'Tomar'}
+                        </button>
                         <button class="btn-action btn-edit" onclick="openEditModal('${remedy.id}')">
                             <i class="fas fa-edit"></i> Editar
                         </button>
@@ -939,7 +1004,8 @@
                         </button>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
         
         // Formatar horário para exibição
@@ -954,6 +1020,7 @@
             const currentHour = now.getHours().toString().padStart(2, '0');
             const currentMinute = now.getMinutes().toString().padStart(2, '0');
             const currentTime = `${currentHour}:${currentMinute}`;
+            const today = now.toDateString();
             
             // Procurar remédios para tomar agora (com margem de 5 minutos)
             const dueRemedies = remedies.filter(remedy => {
@@ -962,7 +1029,9 @@
                 const currentTimeInMinutes = parseInt(currentHour) * 60 + parseInt(currentMinute);
                 
                 // Considerar como "hora de tomar" se estiver no horário exato ou até 5 minutos atrás
-                return Math.abs(remTimeInMinutes - currentTimeInMinutes) <= 5;
+                // E se ainda não foi tomado hoje
+                const isTakenToday = remedy.takenToday && remedy.lastTakenDate === today;
+                return Math.abs(remTimeInMinutes - currentTimeInMinutes) <= 5 && !isTakenToday;
             });
             
             if (dueRemedies.length > 0) {
@@ -985,7 +1054,7 @@
                         setTimeout(() => {
                             if (card) {
                                 card.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.08)';
-                                card.style.borderLeftColor = '#4a90e2';
+                                card.style.borderLeftColor = remedy.takenToday ? '#4CAF50' : '#4a90e2';
                             }
                         }, 10000);
                     }
@@ -1024,9 +1093,17 @@
             if (storedRemedies) {
                 try {
                     remedies = JSON.parse(storedRemedies);
+                    // Limpar imagens muito antigas ou corrompidas para evitar problemas
+                    remedies.forEach(remedy => {
+                        if (remedy.image && remedy.image.length > 100000) { // Se a imagem for muito grande
+                            remedy.image = null; // Remover imagem para evitar problemas
+                        }
+                    });
                     renderRemedies();
                 } catch (e) {
                     console.error('Erro ao carregar remédios:', e);
+                    // Se der erro, limpar o localStorage corrompido
+                    localStorage.removeItem('remedies');
                     remedies = [];
                 }
             }
@@ -1034,12 +1111,37 @@
         
         // Salvar remédios no localStorage
         function saveRemediesToStorage() {
-            localStorage.setItem('remedies', JSON.stringify(remedies));
+            try {
+                // Limitar o tamanho das imagens antes de salvar
+                const remediesToSave = remedies.map(remedy => {
+                    const remedyCopy = {...remedy};
+                    // Se a imagem for muito grande, não salvar
+                    if (remedyCopy.image && remedyCopy.image.length > 50000) {
+                        remedyCopy.image = null;
+                    }
+                    return remedyCopy;
+                });
+                
+                localStorage.setItem('remedies', JSON.stringify(remediesToSave));
+            } catch (e) {
+                console.error('Erro ao salvar remédios:', e);
+                showNotification('Erro ao salvar. Tente novamente.', true);
+                
+                // Se o erro for de quota excedida, limpar imagens e tentar novamente
+                if (e.name === 'QuotaExceededError') {
+                    remedies.forEach(remedy => {
+                        remedy.image = null;
+                    });
+                    localStorage.setItem('remedies', JSON.stringify(remedies));
+                    showNotification('Armazenamento cheio. Imagens foram removidas.', false, 'warning');
+                }
+            }
         }
         
         // Tornar funções disponíveis globalmente
         window.openEditModal = openEditModal;
         window.deleteRemedy = deleteRemedy;
+        window.markAsTaken = markAsTaken;
     </script>
 </body>
 </html>
