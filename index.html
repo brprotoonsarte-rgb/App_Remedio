@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Meus Remédios</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Manifest para PWA -->
+    <link rel="manifest" id="manifest">
     <style>
         * {
             margin: 0;
@@ -707,6 +709,83 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         
+        /* Permissão de notificação */
+        .permission-container {
+            background-color: #e3f2fd;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #2196F3;
+        }
+        
+        .permission-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .permission-text {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .permission-title {
+            font-size: 1.6rem;
+            color: #1976D2;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .permission-description {
+            font-size: 1.4rem;
+            color: #555;
+        }
+        
+        .btn-permission {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 25px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .btn-permission:hover {
+            background-color: #1976D2;
+            transform: translateY(-2px);
+        }
+        
+        .permission-status {
+            margin-top: 10px;
+            font-size: 1.3rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-granted {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+        
+        .status-denied {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+        
         /* Responsividade */
         @media (max-width: 768px) {
             .container {
@@ -789,6 +868,16 @@
             
             .setting-item {
                 min-width: 100%;
+            }
+            
+            .permission-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .btn-permission {
+                width: 100%;
+                justify-content: center;
             }
         }
         
@@ -883,6 +972,19 @@
             
             input:checked + .toggle-slider:before {
                 transform: translateX(30px);
+            }
+            
+            .permission-title {
+                font-size: 1.4rem;
+            }
+            
+            .permission-description {
+                font-size: 1.3rem;
+            }
+            
+            .btn-permission {
+                font-size: 1.4rem;
+                padding: 12px 20px;
             }
         }
         
@@ -994,6 +1096,35 @@
             text-align: center;
             margin-top: 25px;
         }
+        
+        /* Instalar app */
+        .install-container {
+            background-color: #FFF3E0;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #FF9800;
+        }
+        
+        .btn-install {
+            background-color: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 25px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+        
+        .btn-install:hover {
+            background-color: #F57C00;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -1003,6 +1134,42 @@
     </header>
     
     <div class="container">
+        <!-- Instalar como App -->
+        <div class="install-container hidden" id="installContainer">
+            <div class="permission-content">
+                <div class="permission-text">
+                    <h3 class="permission-title">
+                        <i class="fas fa-download"></i> Instalar App
+                    </h3>
+                    <p class="permission-description">
+                        Instale este aplicativo na tela inicial do seu celular para acesso rápido e notificações melhores!
+                    </p>
+                </div>
+                <button class="btn-install" id="installBtn">
+                    <i class="fas fa-plus-circle"></i> Instalar App
+                </button>
+            </div>
+        </div>
+        
+        <!-- Permissão para Notificações -->
+        <div class="permission-container" id="permissionContainer">
+            <div class="permission-content">
+                <div class="permission-text">
+                    <h3 class="permission-title">
+                        <i class="fas fa-bell"></i> Notificações no Celular
+                    </h3>
+                    <p class="permission-description">
+                        Ative as notificações para receber lembretes mesmo com a tela bloqueada. 
+                        O alarme tocará usando o som padrão do seu celular.
+                    </p>
+                    <div id="permissionStatus" class="permission-status hidden"></div>
+                </div>
+                <button class="btn-permission" id="requestPermissionBtn">
+                    <i class="fas fa-check-circle"></i> Permitir Notificações
+                </button>
+            </div>
+        </div>
+        
         <button class="btn-add" id="addRemedyBtn">
             <i class="fas fa-plus-circle"></i> Adicionar Remédio
         </button>
@@ -1027,7 +1194,7 @@
             </div>
         </div>
         
-        <!-- Configurações de Notificação - NOVO LOCAL (final da página) -->
+        <!-- Configurações de Notificação -->
         <div class="settings-container">
             <h2 class="settings-title">
                 <i class="fas fa-bell"></i> Configurações de Notificação
@@ -1035,9 +1202,10 @@
             <div class="settings-options">
                 <div class="setting-item">
                     <label class="setting-label">
-                        <i class="fas fa-volume-up"></i> Som do Alarme
+                        <i class="fas fa-volume-up"></i> Tipo de Som
                     </label>
                     <select id="soundSelect" class="setting-control">
+                        <option value="default">Padrão do Celular</option>
                         <option value="bell">Sino</option>
                         <option value="beep">Bip</option>
                         <option value="alert">Alerta</option>
@@ -1183,6 +1351,9 @@
         let alarmInterval;
         let alarmAudio = null;
         let activeAlarm = null;
+        let notificationPermission = Notification.permission;
+        let deferredPrompt = null;
+        let scheduledTimeouts = [];
         
         // Elementos DOM
         const addRemedyBtn = document.getElementById('addRemedyBtn');
@@ -1213,14 +1384,16 @@
         const saveBtn = document.getElementById('saveBtn');
         const resetBtn = document.getElementById('resetBtn');
         
-        // Elementos de alarme
-        const alarmOverlay = document.getElementById('alarmOverlay');
-        const alarmMessage = document.getElementById('alarmMessage');
-        const alarmRemedy = document.getElementById('alarmRemedy');
-        const snoozeBtn = document.getElementById('snoozeBtn');
-        const dismissBtn = document.getElementById('dismissBtn');
+        // Permissão de notificação
+        const permissionContainer = document.getElementById('permissionContainer');
+        const requestPermissionBtn = document.getElementById('requestPermissionBtn');
+        const permissionStatus = document.getElementById('permissionStatus');
         
-        // Configurações - AGORA NO FINAL
+        // Instalar app
+        const installContainer = document.getElementById('installContainer');
+        const installBtn = document.getElementById('installBtn');
+        
+        // Configurações
         const soundSelect = document.getElementById('soundSelect');
         const vibrationToggle = document.getElementById('vibrationToggle');
         const reminderTime = document.getElementById('reminderTime');
@@ -1232,12 +1405,28 @@
         const alertSound = document.getElementById('alertSound');
         
         // Inicializar a aplicação
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             loadRemedies();
             loadSettings();
             setupEventListeners();
             checkCurrentTime();
             startAlarmChecker();
+            updatePermissionStatus();
+            setupManifest();
+            scheduleAllNotifications();
+            
+            // Verificar se pode instalar como PWA
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                installContainer.classList.remove('hidden');
+            });
+            
+            // Se já está instalado
+            if (window.matchMedia('(display-mode: standalone)').matches || 
+                window.navigator.standalone === true) {
+                installContainer.classList.add('hidden');
+            }
         });
         
         // Configurar listeners de eventos
@@ -1247,6 +1436,8 @@
             cancelBtn.addEventListener('click', closeModal);
             resetBtn.addEventListener('click', resetDailyRemedies);
             testNotificationBtn.addEventListener('click', testNotification);
+            requestPermissionBtn.addEventListener('click', requestNotificationPermission);
+            installBtn.addEventListener('click', installApp);
             
             // Alarm listeners
             snoozeBtn.addEventListener('click', snoozeAlarm);
@@ -1255,7 +1446,10 @@
             // Settings listeners
             soundSelect.addEventListener('change', saveSettings);
             vibrationToggle.addEventListener('change', saveSettings);
-            reminderTime.addEventListener('change', saveSettings);
+            reminderTime.addEventListener('change', () => {
+                saveSettings();
+                scheduleAllNotifications();
+            });
             
             // Fechar modal ao clicar fora
             modalOverlay.addEventListener('click', (e) => {
@@ -1273,6 +1467,214 @@
             
             imageUploadPill.addEventListener('click', () => imageInputPill.click());
             imageInputPill.addEventListener('change', (e) => handleImageUpload(e, 'pill'));
+            
+            // Notificação quando a página fica visível
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    checkCurrentTime();
+                }
+            });
+            
+            // Quando o app ganha foco
+            window.addEventListener('focus', () => {
+                checkCurrentTime();
+            });
+        }
+        
+        // Instalar como App
+        async function installApp() {
+            if (!deferredPrompt) {
+                showNotification('Seu navegador não suporta instalação de apps.', true);
+                return;
+            }
+            
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                showNotification('App instalado com sucesso!', false);
+                installContainer.classList.add('hidden');
+            } else {
+                showNotification('Instalação cancelada.', false, 'warning');
+            }
+            
+            deferredPrompt = null;
+        }
+        
+        // Configurar manifest dinamicamente
+        function setupManifest() {
+            const manifest = {
+                "name": "Meus Remédios",
+                "short_name": "Remédios",
+                "description": "Controle de medicamentos para idosos",
+                "start_url": ".",
+                "display": "standalone",
+                "background_color": "#f0f7ff",
+                "theme_color": "#4a90e2",
+                "icons": [
+                    {
+                        "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNDY0IDEyOEgyODhWODhjMC0xNy42Ny0xNC4zMy0zMi0zMi0zMmgtNjRjLTE3LjY3IDAtMzIgMTQuMzMtMzIgMzJ2NDBINDhjLTI2LjUxIDAtNDggMjEuNDktNDggNDh2Mjg4YzAgMjYuNTEgMjEuNDkgNDggNDggNDhoNDE2YzI2LjUxIDAgNDgtMjEuNDkgNDgtNDhWMTc2YzAtMjYuNTEtMjEuNDktNDgtNDgtNDh6bS05NiAxNjguNjdsLTgwIDgwYy0zLjEyIDMuMTItOC4xOSAzLjEyLTExLjMxIDBsLTgwLTgwYy02LjI1LTYuMjUtMS40Ni0xNi45NyA3LjA1LTE2Ljk3aDQ4VjE3NmMwLTguODQgNy4xNi0xNiAxNi0xNmgzMmM4Ljg0IDAgMTYgNy4xNiAxNiAxNnYxMDMuNzNoNDhjOC41MSAwIDEzLjMgMTAuNzIgNy4wNSAxNi45N3oiLz48L3N2Zz4=",
+                        "sizes": "192x192",
+                        "type": "image/svg+xml"
+                    },
+                    {
+                        "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNDY0IDEyOEgyODhWODhjMC0xNy42Ny0xNC4zMy0zMi0zMi0zMmgtNjRjLTE3LjY3IDAtMzIgMTQuMzMtMzIgMzJ2NDBINDhjLTI2LjUxIDAtNDggMjEuNDktNDggNDh2Mjg4YzAgMjYuNTEgMjEuNDkgNDggNDggNDhoNDE2YzI2LjUxIDAgNDgtMjEuNDkgNDgtNDhWMTc2YzAtMjYuNTEtMjEuNDktNDgtNDgtNDh6bS05NiAxNjguNjdsLTgwIDgwYy0zLjEyIDMuMTItOC4xOSAzLjEyLTExLjMxIDBsLTgwLTgwYy02LjI1LTYuMjUtMS40Ni0xNi45NyA3LjA1LTE2Ljk3aDQ4VjE3NmMwLTguODQgNy4xNi0xNiAxNi0xNmgzMmM4Ljg0IDAgMTYgNy4xNiAxNiAxNnYxMDMuNzNoNDhjOC41MSAwIDEzLjMwIDEwLjcyIDcuMDUgMTYuOTd6Ii8+PC9zdmc+",
+                        "sizes": "512x512",
+                        "type": "image/svg+xml"
+                    }
+                ]
+            };
+            
+            const manifestString = JSON.stringify(manifest);
+            const manifestURL = 'data:application/manifest+json,' + encodeURIComponent(manifestString);
+            document.getElementById('manifest').href = manifestURL;
+        }
+        
+        // Solicitar permissão para notificações
+        async function requestNotificationPermission() {
+            if (!('Notification' in window)) {
+                showNotification('Seu navegador não suporta notificações.', true);
+                return;
+            }
+            
+            if (Notification.permission === 'granted') {
+                showNotification('Notificações já estão ativadas!', false);
+                updatePermissionStatus();
+                scheduleAllNotifications();
+                return;
+            }
+            
+            if (Notification.permission === 'denied') {
+                showNotification('Permissão para notificações foi negada. Por favor, permita nas configurações do seu navegador.', true);
+                updatePermissionStatus();
+                return;
+            }
+            
+            try {
+                const permission = await Notification.requestPermission();
+                notificationPermission = permission;
+                updatePermissionStatus();
+                
+                if (permission === 'granted') {
+                    showNotification('Notificações ativadas com sucesso!', false);
+                    scheduleAllNotifications();
+                }
+            } catch (error) {
+                console.error('Erro ao solicitar permissão:', error);
+                showNotification('Erro ao ativar notificações.', true);
+            }
+        }
+        
+        // Atualizar status da permissão
+        function updatePermissionStatus() {
+            const status = Notification.permission;
+            permissionStatus.textContent = status === 'granted' ? 
+                '✓ Notificações ativadas' : 
+                status === 'denied' ? 
+                '✗ Notificações desativadas' : 
+                '? Aguardando permissão';
+                
+            permissionStatus.className = 'permission-status ' + 
+                (status === 'granted' ? 'status-granted' : 
+                 status === 'denied' ? 'status-denied' : '');
+                 
+            permissionStatus.classList.remove('hidden');
+            
+            // Esconder botão se já tiver permissão
+            if (status === 'granted') {
+                requestPermissionBtn.style.display = 'none';
+            }
+        }
+        
+        // Agendar todas as notificações
+        function scheduleAllNotifications() {
+            // Limpar notificações anteriores
+            clearScheduledNotifications();
+            
+            if (notificationPermission !== 'granted') {
+                return;
+            }
+            
+            const today = new Date();
+            const reminderMinutes = parseInt(reminderTime.value);
+            
+            remedies.forEach(remedy => {
+                scheduleNotificationForRemedy(remedy, today, reminderMinutes);
+            });
+        }
+        
+        // Agendar notificação para um remédio específico
+        function scheduleNotificationForRemedy(remedy, today, reminderMinutes) {
+            const isTakenToday = remedy.takenToday && remedy.lastTakenDate === today.toDateString();
+            if (isTakenToday) return;
+            
+            const [hours, minutes] = remedy.time.split(':');
+            const notificationTime = new Date();
+            notificationTime.setHours(parseInt(hours), parseInt(minutes) - reminderMinutes, 0, 0);
+            
+            // Se já passou do horário hoje, agendar para amanhã
+            if (notificationTime < new Date()) {
+                notificationTime.setDate(notificationTime.getDate() + 1);
+            }
+            
+            // Calcular delay em milissegundos
+            const delay = notificationTime.getTime() - Date.now();
+            
+            if (delay > 0 && delay < 24 * 60 * 60 * 1000) { // Apenas agendar se for dentro de 24 horas
+                const timeoutId = setTimeout(() => {
+                    showPushNotification(remedy);
+                }, delay);
+                
+                scheduledTimeouts.push({
+                    id: timeoutId,
+                    remedyId: remedy.id,
+                    time: notificationTime.getTime()
+                });
+                
+                console.log(`Notificação agendada para ${remedy.name} às ${notificationTime.toLocaleTimeString()}`);
+            }
+        }
+        
+        // Limpar notificações agendadas
+        function clearScheduledNotifications() {
+            scheduledTimeouts.forEach(timeout => {
+                clearTimeout(timeout.id);
+            });
+            scheduledTimeouts = [];
+        }
+        
+        // Mostrar notificação push
+        function showPushNotification(remedy) {
+            if (notificationPermission !== 'granted') return;
+            
+            const options = {
+                body: `Hora de tomar ${remedy.name} - ${remedy.quantity} às ${formatTime(remedy.time)}`,
+                icon: 'https://cdn-icons-png.flaticon.com/512/3145/3145760.png',
+                badge: 'https://cdn-icons-png.flaticon.com/512/3145/3145760.png',
+                tag: `remedy-${remedy.id}`,
+                renotify: true,
+                requireInteraction: true,
+                vibrate: vibrationToggle.checked ? [200, 100, 200, 100, 200] : []
+            };
+            
+            // Usar som padrão do sistema (navegador decide)
+            const notification = new Notification('HORA DO REMÉDIO!', options);
+            
+            notification.onclick = () => {
+                window.focus();
+                showAlarm(remedy);
+                notification.close();
+            };
+            
+            notification.onclose = () => {
+                console.log('Notificação fechada');
+            };
+            
+            // Reprogramar para amanhã
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const reminderMinutes = parseInt(reminderTime.value);
+            scheduleNotificationForRemedy(remedy, tomorrow, reminderMinutes);
         }
         
         // Abrir modal para adicionar remédio
@@ -1288,7 +1690,6 @@
             imageInputBox.value = '';
             imageInputPill.value = '';
             modalOverlay.classList.add('active');
-            // Focar no primeiro campo
             setTimeout(() => remedyNameInput.focus(), 300);
         }
         
@@ -1300,13 +1701,11 @@
             currentEditId = id;
             modalTitle.textContent = 'Editar Remédio';
             
-            // Preencher formulário
             remedyIdInput.value = remedy.id;
             remedyNameInput.value = remedy.name;
             remedyQuantityInput.value = remedy.quantity;
             remedyTimeInput.value = remedy.time;
             
-            // Tratar imagens
             currentImages.box = remedy.imageBox || null;
             currentImages.pill = remedy.imagePill || null;
             
@@ -1328,15 +1727,12 @@
             setTimeout(() => remedyNameInput.focus(), 300);
         }
         
-        // Fechar modal
         function closeModal() {
             modalOverlay.classList.remove('active');
         }
         
-        // Função para redimensionar imagem
         function resizeImage(file, maxWidth = 400, maxHeight = 400, quality = 0.7) {
             return new Promise((resolve, reject) => {
-                // Verificar se é uma imagem
                 if (!file.type.match('image.*')) {
                     reject(new Error('O arquivo não é uma imagem'));
                     return;
@@ -1346,7 +1742,6 @@
                 reader.onload = (event) => {
                     const img = new Image();
                     img.onload = () => {
-                        // Calcular novas dimensões mantendo a proporção
                         let width = img.width;
                         let height = img.height;
                         
@@ -1360,7 +1755,6 @@
                             height = maxHeight;
                         }
                         
-                        // Criar canvas para redimensionar
                         const canvas = document.createElement('canvas');
                         canvas.width = width;
                         canvas.height = height;
@@ -1368,7 +1762,6 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
                         
-                        // Converter para base64 com qualidade reduzida
                         const resizedBase64 = canvas.toDataURL('image/jpeg', quality);
                         resolve(resizedBase64);
                     };
@@ -1380,18 +1773,15 @@
             });
         }
         
-        // Processar upload de imagem
         async function handleImageUpload(e, type) {
             const file = e.target.files[0];
             if (!file) return;
             
-            // Verificar se é uma imagem
             if (!file.type.match('image.*')) {
                 showNotification('Por favor, selecione uma imagem.', true);
                 return;
             }
             
-            // Mostrar prévia imediatamente com uma versão temporária
             const tempReader = new FileReader();
             tempReader.onload = (event) => {
                 if (type === 'box') {
@@ -1405,7 +1795,6 @@
             tempReader.readAsDataURL(file);
             
             try {
-                // Redimensionar imagem
                 const resizedImage = await resizeImage(file, 500, 500, 0.7);
                 currentImages[type] = resizedImage;
                 
@@ -1416,11 +1805,9 @@
             }
         }
         
-        // Salvar remédio
         function saveRemedy(e) {
             e.preventDefault();
             
-            // Coletar dados do formulário
             const remedyData = {
                 id: currentEditId || Date.now().toString(),
                 name: remedyNameInput.value.trim(),
@@ -1429,64 +1816,55 @@
                 imageBox: currentImages.box || null,
                 imagePill: currentImages.pill || null,
                 takenToday: false,
-                lastTakenDate: null,
-                nextAlarmTime: null
+                lastTakenDate: null
             };
             
-            // Validar dados
             if (!remedyData.name || !remedyData.quantity || !remedyData.time) {
                 showNotification('Por favor, preencha todos os campos obrigatórios.', true);
                 return;
             }
             
-            // Calcular próximo alarme
-            updateNextAlarmTime(remedyData);
-            
-            // Adicionar ou atualizar remédio
             if (currentEditId) {
-                // Atualizar remédio existente
                 const index = remedies.findIndex(r => r.id === currentEditId);
                 if (index !== -1) {
-                    // Manter o status de tomado se já estava
                     remedyData.takenToday = remedies[index].takenToday;
                     remedyData.lastTakenDate = remedies[index].lastTakenDate;
                     remedies[index] = remedyData;
                     showNotification('Remédio atualizado com sucesso!');
                 }
             } else {
-                // Adicionar novo remédio
                 remedies.push(remedyData);
                 showNotification('Remédio adicionado com sucesso!');
             }
             
-            // Salvar no localStorage e atualizar interface
             saveRemediesToStorage();
             renderRemedies();
             closeModal();
             checkCurrentTime();
+            scheduleAllNotifications();
         }
         
-        // Marcar remédio como tomado
         function markAsTaken(id) {
             const remedy = remedies.find(r => r.id === id);
             if (remedy) {
                 const today = new Date().toDateString();
                 
-                // Se já foi tomado hoje, desmarcar
                 if (remedy.takenToday && remedy.lastTakenDate === today) {
                     remedy.takenToday = false;
                     remedy.lastTakenDate = null;
                     showNotification(`${remedy.name} marcado como NÃO tomado`);
                 } else {
-                    // Marcar como tomado hoje
                     remedy.takenToday = true;
                     remedy.lastTakenDate = today;
                     showNotification(`${remedy.name} marcado como TOMADO!`);
                     
-                    // Desativar alarme se estiver ativo
                     if (activeAlarm && activeAlarm.id === remedy.id) {
                         stopAlarm();
                     }
+                    
+                    // Cancelar notificação para hoje
+                    clearScheduledNotifications();
+                    scheduleAllNotifications();
                 }
                 
                 saveRemediesToStorage();
@@ -1494,7 +1872,6 @@
             }
         }
         
-        // Excluir remédio
         function deleteRemedy(id) {
             if (confirm('Tem certeza que deseja remover este remédio?')) {
                 remedies = remedies.filter(r => r.id !== id);
@@ -1502,16 +1879,15 @@
                 renderRemedies();
                 showNotification('Remédio removido com sucesso!');
                 checkCurrentTime();
+                scheduleAllNotifications();
             }
         }
         
-        // Reiniciar remédios do dia
         function resetDailyRemedies() {
             if (confirm('Deseja reiniciar todos os remédios para hoje? Isso marcará todos como não tomados.')) {
                 const today = new Date().toDateString();
                 
                 remedies.forEach(remedy => {
-                    // Só resetar se foi tomado hoje
                     if (remedy.lastTakenDate === today) {
                         remedy.takenToday = false;
                         remedy.lastTakenDate = null;
@@ -1521,21 +1897,26 @@
                 saveRemediesToStorage();
                 renderRemedies();
                 showNotification('Todos os remédios foram reiniciados para hoje!');
+                scheduleAllNotifications();
             }
         }
         
-        // Testar notificação
         function testNotification() {
-            const testRemedy = {
-                name: "Remédio de Teste",
-                quantity: "1 comprimido",
-                time: new Date().toTimeString().slice(0,5)
-            };
-            
-            showAlarm(testRemedy);
+            if (notificationPermission === 'granted') {
+                const testRemedy = {
+                    id: 'test',
+                    name: "Remédio de Teste",
+                    quantity: "1 comprimido",
+                    time: new Date().toTimeString().slice(0,5)
+                };
+                
+                showPushNotification(testRemedy);
+                showNotification('Notificação de teste enviada!', false);
+            } else {
+                showNotification('Por favor, ative as notificações primeiro.', true);
+            }
         }
         
-        // Renderizar lista de remédios
         function renderRemedies() {
             if (remedies.length === 0) {
                 remedyList.innerHTML = `
@@ -1548,14 +1929,12 @@
                 return;
             }
             
-            // Ordenar por horário
             remedies.sort((a, b) => {
                 const timeA = a.time.replace(':', '');
                 const timeB = b.time.replace(':', '');
                 return parseInt(timeA) - parseInt(timeB);
             });
             
-            // Gerar HTML dos remédios
             remedyList.innerHTML = remedies.map(remedy => {
                 const today = new Date().toDateString();
                 const isTakenToday = remedy.takenToday && remedy.lastTakenDate === today;
@@ -1626,13 +2005,11 @@
             }).join('');
         }
         
-        // Formatar horário para exibição
         function formatTime(timeStr) {
             const [hours, minutes] = timeStr.split(':');
             return `${hours}h${minutes}`;
         }
         
-        // Verificar se há remédios para tomar no horário atual
         function checkCurrentTime() {
             const now = new Date();
             const currentHour = now.getHours().toString().padStart(2, '0');
@@ -1640,14 +2017,11 @@
             const currentTime = `${currentHour}:${currentMinute}`;
             const today = now.toDateString();
             
-            // Procurar remédios para tomar agora (com margem de 5 minutos)
             const dueRemedies = remedies.filter(remedy => {
                 const [remHour, remMinute] = remedy.time.split(':');
                 const remTimeInMinutes = parseInt(remHour) * 60 + parseInt(remMinute);
                 const currentTimeInMinutes = parseInt(currentHour) * 60 + parseInt(currentMinute);
                 
-                // Considerar como "hora de tomar" se estiver no horário exato ou até 5 minutos atrás
-                // E se ainda não foi tomado hoje
                 const isTakenToday = remedy.takenToday && remedy.lastTakenDate === today;
                 return Math.abs(remTimeInMinutes - currentTimeInMinutes) <= 5 && !isTakenToday;
             });
@@ -1661,14 +2035,12 @@
                 }
                 timeAlert.classList.remove('hidden');
                 
-                // Adicionar efeito visual ao cartão do remédio
                 dueRemedies.forEach(remedy => {
                     const card = document.getElementById(`remedy-${remedy.id}`);
                     if (card) {
                         card.style.boxShadow = '0 0 0 3px #ffc107, 0 5px 15px rgba(0, 0, 0, 0.1)';
                         card.style.borderLeftColor = '#ff9800';
                         
-                        // Remover efeito após 10 segundos
                         setTimeout(() => {
                             if (card) {
                                 card.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.08)';
@@ -1684,14 +2056,11 @@
         
         // ========== SISTEMA DE ALARMES ==========
         
-        // Iniciar verificador de alarmes
         function startAlarmChecker() {
-            // Verificar a cada 30 segundos
             alarmInterval = setInterval(checkAlarms, 30000);
-            checkAlarms(); // Verificar imediatamente
+            checkAlarms();
         }
         
-        // Verificar alarmes
         function checkAlarms() {
             const now = new Date();
             const today = now.toDateString();
@@ -1699,50 +2068,46 @@
             
             remedies.forEach(remedy => {
                 const isTakenToday = remedy.takenToday && remedy.lastTakenDate === today;
-                if (isTakenToday) return; // Não alarmar se já tomou hoje
+                if (isTakenToday) return;
                 
-                // Calcular horário do alarme considerando a antecedência
                 const [hours, minutes] = remedy.time.split(':');
                 const alarmTime = new Date();
                 alarmTime.setHours(parseInt(hours), parseInt(minutes) - reminderMinutes, 0, 0);
                 
-                // Se já passou do horário do alarme hoje, calcular para amanhã
                 if (alarmTime < now) {
                     alarmTime.setDate(alarmTime.getDate() + 1);
                 }
                 
-                // Se for hora do alarme
-                if (Math.abs(alarmTime - now) < 30000) { // 30 segundos de margem
+                if (Math.abs(alarmTime - now) < 30000) {
                     showAlarm(remedy);
                 }
             });
         }
         
-        // Mostrar alarme
         function showAlarm(remedy) {
             activeAlarm = remedy;
             alarmMessage.textContent = `Hora de tomar ${remedy.name}!`;
             alarmRemedy.textContent = `${remedy.quantity} - ${formatTime(remedy.time)}`;
             alarmOverlay.classList.add('active');
             
-            // Tocar som
             playAlarmSound();
             
-            // Ativar vibração se permitido
             if (vibrationToggle.checked && 'vibrate' in navigator) {
                 navigator.vibrate([200, 100, 200, 100, 200]);
             }
         }
         
-        // Tocar som do alarme
         function playAlarmSound() {
             const soundType = soundSelect.value;
             if (soundType === 'none') return;
             
-            // Parar som anterior
             stopAlarmSound();
             
-            // Tocar novo som
+            if (soundType === 'default') {
+                // O navegador usará o som padrão do sistema para notificações
+                return;
+            }
+            
             switch(soundType) {
                 case 'bell':
                     bellSound.currentTime = 0;
@@ -1761,7 +2126,6 @@
                     break;
             }
             
-            // Repetir a cada 10 segundos se o alarme ainda estiver ativo
             if (alarmAudio) {
                 alarmAudio.onended = () => {
                     if (alarmOverlay.classList.contains('active')) {
@@ -1771,7 +2135,6 @@
             }
         }
         
-        // Parar som do alarme
         function stopAlarmSound() {
             if (alarmAudio) {
                 alarmAudio.pause();
@@ -1779,24 +2142,20 @@
             }
         }
         
-        // Parar alarme completamente
         function stopAlarm() {
             alarmOverlay.classList.remove('active');
             stopAlarmSound();
             activeAlarm = null;
             
-            // Parar vibração
             if ('vibrate' in navigator) {
                 navigator.vibrate(0);
             }
         }
         
-        // Adiar alarme
         function snoozeAlarm() {
             stopAlarm();
             showNotification('Alarme adiado por 5 minutos', false, 'warning');
             
-            // Programar próximo alarme para 5 minutos
             setTimeout(() => {
                 if (activeAlarm) {
                     showAlarm(activeAlarm);
@@ -1804,43 +2163,22 @@
             }, 5 * 60 * 1000);
         }
         
-        // Descartar alarme
         function dismissAlarm() {
             if (activeAlarm) {
-                // Marcar como tomado automaticamente
                 markAsTaken(activeAlarm.id);
                 stopAlarm();
             }
         }
         
-        // Atualizar próximo horário de alarme
-        function updateNextAlarmTime(remedy) {
-            const now = new Date();
-            const [hours, minutes] = remedy.time.split(':');
-            const reminderMinutes = parseInt(reminderTime.value);
-            
-            const alarmTime = new Date();
-            alarmTime.setHours(parseInt(hours), parseInt(minutes) - reminderMinutes, 0, 0);
-            
-            // Se já passou do horário hoje, calcular para amanhã
-            if (alarmTime < now) {
-                alarmTime.setDate(alarmTime.getDate() + 1);
-            }
-            
-            remedy.nextAlarmTime = alarmTime.getTime();
-        }
-        
         // ========== CONFIGURAÇÕES ==========
         
-        // Carregar configurações
         function loadSettings() {
             const settings = JSON.parse(localStorage.getItem('remedySettings') || '{}');
-            soundSelect.value = settings.sound || 'bell';
+            soundSelect.value = settings.sound || 'default';
             vibrationToggle.checked = settings.vibration !== false;
             reminderTime.value = settings.reminderTime || '10';
         }
         
-        // Salvar configurações
         function saveSettings() {
             const settings = {
                 sound: soundSelect.value,
@@ -1850,14 +2188,11 @@
             localStorage.setItem('remedySettings', JSON.stringify(settings));
         }
         
-        // Mostrar notificação
         function showNotification(message, isError = false, type = '') {
             notificationText.textContent = message;
             
-            // Limpar classes anteriores
             notification.className = 'notification';
             
-            // Adicionar classe baseada no tipo
             if (isError) {
                 notification.classList.add('error');
             } else if (type === 'warning') {
@@ -1866,20 +2201,17 @@
             
             notification.classList.remove('hidden');
             
-            // Ocultar após 3 segundos (5 segundos para mensagens de aviso)
             const timeout = type === 'warning' ? 5000 : 3000;
             setTimeout(() => {
                 notification.classList.add('hidden');
             }, timeout);
         }
         
-        // Carregar remédios do localStorage
         function loadRemedies() {
             const storedRemedies = localStorage.getItem('remedies');
             if (storedRemedies) {
                 try {
                     remedies = JSON.parse(storedRemedies);
-                    // Limpar imagens muito grandes para evitar problemas
                     remedies.forEach(remedy => {
                         if (remedy.imageBox && remedy.imageBox.length > 50000) {
                             remedy.imageBox = null;
@@ -1891,20 +2223,16 @@
                     renderRemedies();
                 } catch (e) {
                     console.error('Erro ao carregar remédios:', e);
-                    // Se der erro, limpar o localStorage corrompido
                     localStorage.removeItem('remedies');
                     remedies = [];
                 }
             }
         }
         
-        // Salvar remédios no localStorage
         function saveRemediesToStorage() {
             try {
-                // Limitar o tamanho das imagens antes de salvar
                 const remediesToSave = remedies.map(remedy => {
                     const remedyCopy = {...remedy};
-                    // Se as imagens forem muito grandes, não salvar
                     if (remedyCopy.imageBox && remedyCopy.imageBox.length > 40000) {
                         remedyCopy.imageBox = null;
                     }
@@ -1919,7 +2247,6 @@
                 console.error('Erro ao salvar remédios:', e);
                 showNotification('Erro ao salvar. Tente novamente.', true);
                 
-                // Se o erro for de quota excedida, limpar imagens e tentar novamente
                 if (e.name === 'QuotaExceededError') {
                     remedies.forEach(remedy => {
                         remedy.imageBox = null;
