@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Meus Remédios</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f7ff;
+            color: #333;
+            line-height: 1.6;
+            padding-bottom: 80px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Cabeçalho */
+        header {
+            background: linear-gradient(135deg, #4a90e2 0%, #2c6cb0 100%);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            border-radius: 0 0 25px 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+        }
+        
+        /* Botão principal */
+        .btn-add {
+            display: block;
+            width: 90%;
+            max-width: 350px;
+            margin: 25px auto 35px;
+            padding: 22px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .btn-add:hover, .btn-add:active {
+            background-color: #3d8b40;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 18px rgba(76, 175, 80, 0.4);
+        }
+        
+        .btn-add i {
+            margin-right: 12px;
+        }
+        
+        /* Lista de remédios */
+        .remedy-list {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .empty-message {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #666;
+            padding: 40px 20px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Cartão de remédio */
+        .remedy-card {
+            background-color: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            position: relative;
+            border-left: 8px solid #4a90e2;
+        }
+        
+        .remedy-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .remedy-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 3px solid #f0f7ff;
+        }
+        
+        .default-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            margin-right: 20px;
+            background-color: #e6f2ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #f0f7ff;
+        }
+        
+        .default-image i {
+            font-size: 2.5rem;
+            color: #4a90e2;
+        }
+        
+        .remedy-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c6cb0;
+            flex: 1;
+        }
+        
+        .remedy-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            background-color: #f0f7ff;
+            padding: 12px 18px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .info-label {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .remedy-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .btn-action {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .btn-edit {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .btn-delete {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .btn-action i {
+            margin-right: 8px;
+        }
+        
+        .btn-action:hover, .btn-action:active {
+            opacity: 0.9;
+            transform: scale(1.03);
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background-color: white;
+            border-radius: 25px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .modal-title {
+            font-size: 2rem;
+            color: #2c6cb0;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2.2rem;
+            color: #666;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .close-btn:hover, .close-btn:active {
+            background-color: #f5f5f5;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            color: #444;
+            font-weight: 600;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 18px 20px;
+            font-size: 1.6rem;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4a90e2;
+            background-color: white;
+        }
+        
+        .image-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 3px dashed #4a90e2;
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            background-color: #f0f7ff;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .image-upload:hover, .image-upload:active {
+            background-color: #e6f2ff;
+        }
+        
+        .image-upload i {
+            font-size: 3.5rem;
+            color: #4a90e2;
+            margin-bottom: 15px;
+        }
+        
+        .image-upload span {
+            font-size: 1.5rem;
+            color: #2c6cb0;
+        }
+        
+        .image-preview {
+            width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn-save {
+            flex: 1;
+            padding: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-cancel {
+            flex: 1;
+            padding: 20px;
+            background-color: #9e9e9e;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-save:hover, .btn-save:active {
+            background-color: #3d8b40;
+        }
+        
+        .btn-cancel:hover, .btn-cancel:active {
+            background-color: #757575;
+        }
+        
+        /* Alerta de horário */
+        .time-alert {
+            background-color: #fff3cd;
+            border-left: 8px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+        }
+        
+        .time-alert i {
+            color: #ff9800;
+            font-size: 2rem;
+            margin-right: 15px;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.9rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .btn-add {
+                padding: 20px;
+                font-size: 1.6rem;
+            }
+            
+            .remedy-name {
+                font-size: 1.6rem;
+            }
+            
+            .info-item {
+                min-width: 100%;
+            }
+            
+            .modal {
+                padding: 20px;
+            }
+            
+            .modal-title {
+                font-size: 1.7rem;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .container {
+                padding: 15px;
+            }
+            
+            header {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 1.7rem;
+            }
+            
+            .remedy-actions {
+                flex-direction: column;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+            }
+        }
+        
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .remedy-card {
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        /* Notificação */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 1.4rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.3s ease-out;
+            max-width: 350px;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .notification i {
+            margin-right: 10px;
+            font-size: 1.6rem;
+        }
+        
+        .notification.error {
+            background-color: #f44336;
+        }
+        
+        /* Ajustes para acessibilidade */
+        button:focus, input:focus, select:focus {
+            outline: 3px solid #4a90e2;
+            outline-offset: 2px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-pills"></i> Meus Remédios</h1>
+        <p class="subtitle">Controle seus medicamentos de forma simples</p>
+    </header>
+    
+    <div class="container">
+        <button class="btn-add" id="addRemedyBtn">
+            <i class="fas fa-plus-circle"></i> Adicionar Remédio
+        </button>
+        
+        <div id="timeAlert" class="time-alert hidden">
+            <i class="fas fa-bell"></i>
+            <span id="alertText">Hora de tomar seu remédio!</span>
+        </div>
+        
+        <div class="remedy-list" id="remedyList">
+            <!-- Os remédios serão carregados aqui -->
+            <div class="empty-message">
+                <i class="fas fa-capsules" style="font-size: 3rem; margin-bottom: 15px; color: #4a90e2;"></i>
+                <p>Você ainda não adicionou nenhum remédio.</p>
+                <p>Clique no botão acima para adicionar o primeiro.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal para adicionar/editar remédio -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Adicionar Remédio</h2>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            
+            <form id="remedyForm">
+                <input type="hidden" id="remedyId">
+                
+                <div class="form-group">
+                    <label for="remedyName"><i class="fas fa-capsules"></i> Nome do Remédio</label>
+                    <input type="text" id="remedyName" placeholder="Ex: Paracetamol" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="remedyQuantity"><i class="fas fa-balance-scale"></i> Quantidade</label>
+                    <input type="text" id="remedyQuantity" placeholder="Ex: 1 comprimido, 2 gotas" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="remedyTime"><i class="fas fa-clock"></i> Horário</label>
+                    <input type="time" id="remedyTime" required>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-camera"></i> Foto do Remédio (opcional)</label>
+                    <div class="image-upload" id="imageUpload">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Clique para carregar uma foto</span>
+                    </div>
+                    <input type="file" id="imageInput" accept="image/*" class="hidden">
+                    <img id="imagePreview" class="image-preview" alt="Pré-visualização da imagem">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="cancelBtn">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar Remédio</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Notificação -->
+    <div id="notification" class="notification hidden">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText">Remédio adicionado com sucesso!</span>
+    </div>
+
+    <script>
+        // Estado da aplicação
+        let remedies = [];
+        let currentEditId = null;
+        let currentImageBase64 = null;
+        
+        // Elementos DOM
+        const addRemedyBtn = document.getElementById('addRemedyBtn');
+        const remedyList = document.getElementById('remedyList');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const remedyForm = document.getElementById('remedyForm');
+        const modalTitle = document.getElementById('modalTitle');
+        const remedyIdInput = document.getElementById('remedyId');
+        const remedyNameInput = document.getElementById('remedyName');
+        const remedyQuantityInput = document.getElementById('remedyQuantity');
+        const remedyTimeInput = document.getElementById('remedyTime');
+        const imageUpload = document.getElementById('imageUpload');
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notificationText');
+        const timeAlert = document.getElementById('timeAlert');
+        const alertText = document.getElementById('alertText');
+        
+        // Inicializar a aplicação
+        document.addEventListener('DOMContentLoaded', () => {
+            loadRemedies();
+            setupEventListeners();
+            checkCurrentTime();
+            // Verificar horários a cada minuto
+            setInterval(checkCurrentTime, 60000);
+        });
+        
+        // Configurar listeners de eventos
+        function setupEventListeners() {
+            addRemedyBtn.addEventListener('click', openAddModal);
+            closeModalBtn.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+            
+            // Fechar modal ao clicar fora
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    closeModal();
+                }
+            });
+            
+            // Enviar formulário
+            remedyForm.addEventListener('submit', saveRemedy);
+            
+            // Upload de imagem
+            imageUpload.addEventListener('click', () => imageInput.click());
+            imageInput.addEventListener('change', handleImageUpload);
+        }
+        
+        // Abrir modal para adicionar remédio
+        function openAddModal() {
+            currentEditId = null;
+            currentImageBase64 = null;
+            modalTitle.textContent = 'Adicionar Remédio';
+            remedyForm.reset();
+            imagePreview.style.display = 'none';
+            imagePreview.src = '';
+            modalOverlay.classList.add('active');
+            // Focar no primeiro campo
+            setTimeout(() => remedyNameInput.focus(), 300);
+        }
+        
+        // Abrir modal para editar remédio
+        function openEditModal(id) {
+            const remedy = remedies.find(r => r.id === id);
+            if (!remedy) return;
+            
+            currentEditId = id;
+            modalTitle.textContent = 'Editar Remédio';
+            
+            // Preencher formulário
+            remedyIdInput.value = remedy.id;
+            remedyNameInput.value = remedy.name;
+            remedyQuantityInput.value = remedy.quantity;
+            remedyTimeInput.value = remedy.time;
+            
+            // Tratar imagem
+            if (remedy.image) {
+                currentImageBase64 = remedy.image;
+                imagePreview.src = remedy.image;
+                imagePreview.style.display = 'block';
+            } else {
+                currentImageBase64 = null;
+                imagePreview.style.display = 'none';
+            }
+            
+            modalOverlay.classList.add('active');
+            setTimeout(() => remedyNameInput.focus(), 300);
+        }
+        
+        // Fechar modal
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+        }
+        
+        // Processar upload de imagem
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Verificar se é uma imagem
+            if (!file.type.match('image.*')) {
+                showNotification('Por favor, selecione uma imagem.', true);
+                return;
+            }
+            
+            // Verificar tamanho (limite de 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showNotification('A imagem deve ter no máximo 2MB.', true);
+                return;
+            }
+            
+            // Converter para base64
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                currentImageBase64 = event.target.result;
+                imagePreview.src = currentImageBase64;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // Salvar remédio
+        function saveRemedy(e) {
+            e.preventDefault();
+            
+            // Coletar dados do formulário
+            const remedyData = {
+                id: currentEditId || Date.now().toString(),
+                name: remedyNameInput.value.trim(),
+                quantity: remedyQuantityInput.value.trim(),
+                time: remedyTimeInput.value,
+                image: currentImageBase64
+            };
+            
+            // Validar dados
+            if (!remedyData.name || !remedyData.quantity || !remedyData.time) {
+                showNotification('Por favor, preencha todos os campos obrigatórios.', true);
+                return;
+            }
+            
+            // Adicionar ou atualizar remédio
+            if (currentEditId) {
+                // Atualizar remédio existente
+                const index = remedies.findIndex(r => r.id === currentEditId);
+                if (index !== -1) {
+                    remedies[index] = remedyData;
+                    showNotification('Remédio atualizado com sucesso!');
+                }
+            } else {
+                // Adicionar novo remédio
+                remedies.push(remedyData);
+                showNotification('Remédio adicionado com sucesso!');
+            }
+            
+            // Salvar no localStorage e atualizar interface
+            saveRemediesToStorage();
+            renderRemedies();
+            closeModal();
+            checkCurrentTime();
+        }
+        
+        // Excluir remédio
+        function deleteRemedy(id) {
+            if (confirm('Tem certeza que deseja remover este remédio?')) {
+                remedies = remedies.filter(r => r.id !== id);
+                saveRemediesToStorage();
+                renderRemedies();
+                showNotification('Remédio removido com sucesso!');
+                checkCurrentTime();
+            }
+        }
+        
+        // Renderizar lista de remédios
+        function renderRemedies() {
+            if (remedies.length === 0) {
+                remedyList.innerHTML = `
+                    <div class="empty-message">
+                        <i class="fas fa-capsules" style="font-size: 3rem; margin-bottom: 15px; color: #4a90e2;"></i>
+                        <p>Você ainda não adicionou nenhum remédio.</p>
+                        <p>Clique no botão acima para adicionar o primeiro.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Ordenar por horário
+            remedies.sort((a, b) => {
+                const timeA = a.time.replace(':', '');
+                const timeB = b.time.replace(':', '');
+                return parseInt(timeA) - parseInt(timeB);
+            });
+            
+            // Gerar HTML dos remédios
+            remedyList.innerHTML = remedies.map(remedy => `
+                <div class="remedy-card" id="remedy-${remedy.id}">
+                    <div class="remedy-header">
+                        ${remedy.image ? 
+                            `<img src="${remedy.image}" alt="${remedy.name}" class="remedy-image">` : 
+                            `<div class="default-image"><i class="fas fa-pills"></i></div>`
+                        }
+                        <div class="remedy-name">${remedy.name}</div>
+                    </div>
+                    
+                    <div class="remedy-info">
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-clock"></i> Horário</div>
+                            <div class="info-value">${formatTime(remedy.time)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label"><i class="fas fa-balance-scale"></i> Quantidade</div>
+                            <div class="info-value">${remedy.quantity}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="remedy-actions">
+                        <button class="btn-action btn-edit" onclick="openEditModal('${remedy.id}')">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn-action btn-delete" onclick="deleteRemedy('${remedy.id}')">
+                            <i class="fas fa-trash-alt"></i> Excluir
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Formatar horário para exibição
+        function formatTime(timeStr) {
+            const [hours, minutes] = timeStr.split(':');
+            return `${hours}h${minutes}`;
+        }
+        
+        // Verificar se há remédios para tomar no horário atual
+        function checkCurrentTime() {
+            const now = new Date();
+            const currentHour = now.getHours().toString().padStart(2, '0');
+            const currentMinute = now.getMinutes().toString().padStart(2, '0');
+            const currentTime = `${currentHour}:${currentMinute}`;
+            
+            // Procurar remédios para tomar agora (com margem de 5 minutos)
+            const dueRemedies = remedies.filter(remedy => {
+                const [remHour, remMinute] = remedy.time.split(':');
+                const remTimeInMinutes = parseInt(remHour) * 60 + parseInt(remMinute);
+                const currentTimeInMinutes = parseInt(currentHour) * 60 + parseInt(currentMinute);
+                
+                // Considerar como "hora de tomar" se estiver no horário exato ou até 5 minutos atrás
+                return Math.abs(remTimeInMinutes - currentTimeInMinutes) <= 5;
+            });
+            
+            if (dueRemedies.length > 0) {
+                if (dueRemedies.length === 1) {
+                    alertText.textContent = `Hora de tomar ${dueRemedies[0].name}!`;
+                } else {
+                    const remedyNames = dueRemedies.map(r => r.name).join(', ');
+                    alertText.textContent = `Hora de tomar: ${remedyNames}`;
+                }
+                timeAlert.classList.remove('hidden');
+                
+                // Adicionar efeito visual ao cartão do remédio
+                dueRemedies.forEach(remedy => {
+                    const card = document.getElementById(`remedy-${remedy.id}`);
+                    if (card) {
+                        card.style.boxShadow = '0 0 0 3px #ffc107, 0 5px 15px rgba(0, 0, 0, 0.1)';
+                        card.style.borderLeftColor = '#ff9800';
+                        
+                        // Remover efeito após 10 segundos
+                        setTimeout(() => {
+                            if (card) {
+                                card.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.08)';
+                                card.style.borderLeftColor = '#4a90e2';
+                            }
+                        }, 10000);
+                    }
+                });
+            } else {
+                timeAlert.classList.add('hidden');
+            }
+        }
+        
+        // Mostrar notificação
+        function showNotification(message, isError = false) {
+            notificationText.textContent = message;
+            notification.className = `notification ${isError ? 'error' : ''}`;
+            notification.classList.remove('hidden');
+            
+            // Ocultar após 3 segundos
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 3000);
+        }
+        
+        // Carregar remédios do localStorage
+        function loadRemedies() {
+            const storedRemedies = localStorage.getItem('remedies');
+            if (storedRemedies) {
+                try {
+                    remedies = JSON.parse(storedRemedies);
+                    renderRemedies();
+                } catch (e) {
+                    console.error('Erro ao carregar remédios:', e);
+                    remedies = [];
+                }
+            }
+        }
+        
+        // Salvar remédios no localStorage
+        function saveRemediesToStorage() {
+            localStorage.setItem('remedies', JSON.stringify(remedies));
+        }
+        
+        // Tornar funções disponíveis globalmente
+        window.openEditModal = openEditModal;
+        window.deleteRemedy = deleteRemedy;
+    </script>
+</body>
+</html>
