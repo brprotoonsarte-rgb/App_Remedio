@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Meus Remédios</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Manifest para PWA -->
-    <link rel="manifest" id="manifest">
     <style>
         * {
             margin: 0;
@@ -275,7 +273,7 @@
             transform: scale(1.03);
         }
         
-        /* Configurações - NOVO LOCAL (final da página) */
+        /* Configurações - NO FINAL DA PÁGINA */
         .settings-container {
             background-color: white;
             border-radius: 15px;
@@ -709,83 +707,6 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         
-        /* Permissão de notificação */
-        .permission-container {
-            background-color: #e3f2fd;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-            border-left: 5px solid #2196F3;
-        }
-        
-        .permission-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .permission-text {
-            flex: 1;
-            min-width: 250px;
-        }
-        
-        .permission-title {
-            font-size: 1.6rem;
-            color: #1976D2;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .permission-description {
-            font-size: 1.4rem;
-            color: #555;
-        }
-        
-        .btn-permission {
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 15px 25px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-        
-        .btn-permission:hover {
-            background-color: #1976D2;
-            transform: translateY(-2px);
-        }
-        
-        .permission-status {
-            margin-top: 10px;
-            font-size: 1.3rem;
-            padding: 8px 12px;
-            border-radius: 8px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .status-granted {
-            background-color: #E8F5E9;
-            color: #2E7D32;
-        }
-        
-        .status-denied {
-            background-color: #FFEBEE;
-            color: #C62828;
-        }
-        
         /* Responsividade */
         @media (max-width: 768px) {
             .container {
@@ -868,16 +789,6 @@
             
             .setting-item {
                 min-width: 100%;
-            }
-            
-            .permission-content {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .btn-permission {
-                width: 100%;
-                justify-content: center;
             }
         }
         
@@ -972,19 +883,6 @@
             
             input:checked + .toggle-slider:before {
                 transform: translateX(30px);
-            }
-            
-            .permission-title {
-                font-size: 1.4rem;
-            }
-            
-            .permission-description {
-                font-size: 1.3rem;
-            }
-            
-            .btn-permission {
-                font-size: 1.4rem;
-                padding: 12px 20px;
             }
         }
         
@@ -1096,35 +994,6 @@
             text-align: center;
             margin-top: 25px;
         }
-        
-        /* Instalar app */
-        .install-container {
-            background-color: #FFF3E0;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-            border-left: 5px solid #FF9800;
-        }
-        
-        .btn-install {
-            background-color: #FF9800;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 15px 25px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s;
-        }
-        
-        .btn-install:hover {
-            background-color: #F57C00;
-            transform: translateY(-2px);
-        }
     </style>
 </head>
 <body>
@@ -1134,42 +1003,6 @@
     </header>
     
     <div class="container">
-        <!-- Instalar como App -->
-        <div class="install-container hidden" id="installContainer">
-            <div class="permission-content">
-                <div class="permission-text">
-                    <h3 class="permission-title">
-                        <i class="fas fa-download"></i> Instalar App
-                    </h3>
-                    <p class="permission-description">
-                        Instale este aplicativo na tela inicial do seu celular para acesso rápido e notificações melhores!
-                    </p>
-                </div>
-                <button class="btn-install" id="installBtn">
-                    <i class="fas fa-plus-circle"></i> Instalar App
-                </button>
-            </div>
-        </div>
-        
-        <!-- Permissão para Notificações -->
-        <div class="permission-container" id="permissionContainer">
-            <div class="permission-content">
-                <div class="permission-text">
-                    <h3 class="permission-title">
-                        <i class="fas fa-bell"></i> Notificações no Celular
-                    </h3>
-                    <p class="permission-description">
-                        Ative as notificações para receber lembretes mesmo com a tela bloqueada. 
-                        O alarme tocará usando o som padrão do seu celular.
-                    </p>
-                    <div id="permissionStatus" class="permission-status hidden"></div>
-                </div>
-                <button class="btn-permission" id="requestPermissionBtn">
-                    <i class="fas fa-check-circle"></i> Permitir Notificações
-                </button>
-            </div>
-        </div>
-        
         <button class="btn-add" id="addRemedyBtn">
             <i class="fas fa-plus-circle"></i> Adicionar Remédio
         </button>
@@ -1194,7 +1027,7 @@
             </div>
         </div>
         
-        <!-- Configurações de Notificação -->
+        <!-- Configurações de Notificação - APENAS NO FINAL -->
         <div class="settings-container">
             <h2 class="settings-title">
                 <i class="fas fa-bell"></i> Configurações de Notificação
@@ -1352,7 +1185,6 @@
         let alarmAudio = null;
         let activeAlarm = null;
         let notificationPermission = Notification.permission;
-        let deferredPrompt = null;
         let scheduledTimeouts = [];
         
         // Elementos DOM
@@ -1384,16 +1216,7 @@
         const saveBtn = document.getElementById('saveBtn');
         const resetBtn = document.getElementById('resetBtn');
         
-        // Permissão de notificação
-        const permissionContainer = document.getElementById('permissionContainer');
-        const requestPermissionBtn = document.getElementById('requestPermissionBtn');
-        const permissionStatus = document.getElementById('permissionStatus');
-        
-        // Instalar app
-        const installContainer = document.getElementById('installContainer');
-        const installBtn = document.getElementById('installBtn');
-        
-        // Configurações
+        // Configurações - APENAS NO FINAL
         const soundSelect = document.getElementById('soundSelect');
         const vibrationToggle = document.getElementById('vibrationToggle');
         const reminderTime = document.getElementById('reminderTime');
@@ -1405,28 +1228,13 @@
         const alertSound = document.getElementById('alertSound');
         
         // Inicializar a aplicação
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', () => {
             loadRemedies();
             loadSettings();
             setupEventListeners();
             checkCurrentTime();
             startAlarmChecker();
-            updatePermissionStatus();
-            setupManifest();
-            scheduleAllNotifications();
-            
-            // Verificar se pode instalar como PWA
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                installContainer.classList.remove('hidden');
-            });
-            
-            // Se já está instalado
-            if (window.matchMedia('(display-mode: standalone)').matches || 
-                window.navigator.standalone === true) {
-                installContainer.classList.add('hidden');
-            }
+            requestNotificationPermissionSilently();
         });
         
         // Configurar listeners de eventos
@@ -1436,8 +1244,6 @@
             cancelBtn.addEventListener('click', closeModal);
             resetBtn.addEventListener('click', resetDailyRemedies);
             testNotificationBtn.addEventListener('click', testNotification);
-            requestPermissionBtn.addEventListener('click', requestNotificationPermission);
-            installBtn.addEventListener('click', installApp);
             
             // Alarm listeners
             snoozeBtn.addEventListener('click', snoozeAlarm);
@@ -1481,108 +1287,12 @@
             });
         }
         
-        // Instalar como App
-        async function installApp() {
-            if (!deferredPrompt) {
-                showNotification('Seu navegador não suporta instalação de apps.', true);
-                return;
-            }
-            
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            
-            if (outcome === 'accepted') {
-                showNotification('App instalado com sucesso!', false);
-                installContainer.classList.add('hidden');
-            } else {
-                showNotification('Instalação cancelada.', false, 'warning');
-            }
-            
-            deferredPrompt = null;
-        }
-        
-        // Configurar manifest dinamicamente
-        function setupManifest() {
-            const manifest = {
-                "name": "Meus Remédios",
-                "short_name": "Remédios",
-                "description": "Controle de medicamentos para idosos",
-                "start_url": ".",
-                "display": "standalone",
-                "background_color": "#f0f7ff",
-                "theme_color": "#4a90e2",
-                "icons": [
-                    {
-                        "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNDY0IDEyOEgyODhWODhjMC0xNy42Ny0xNC4zMy0zMi0zMi0zMmgtNjRjLTE3LjY3IDAtMzIgMTQuMzMtMzIgMzJ2NDBINDhjLTI2LjUxIDAtNDggMjEuNDktNDggNDh2Mjg4YzAgMjYuNTEgMjEuNDkgNDggNDggNDhoNDE2YzI2LjUxIDAgNDgtMjEuNDkgNDgtNDhWMTc2YzAtMjYuNTEtMjEuNDktNDgtNDgtNDh6bS05NiAxNjguNjdsLTgwIDgwYy0zLjEyIDMuMTItOC4xOSAzLjEyLTExLjMxIDBsLTgwLTgwYy02LjI1LTYuMjUtMS40Ni0xNi45NyA3LjA1LTE2Ljk3aDQ4VjE3NmMwLTguODQgNy4xNi0xNiAxNi0xNmgzMmM4Ljg0IDAgMTYgNy4xNiAxNiAxNnYxMDMuNzNoNDhjOC41MSAwIDEzLjMgMTAuNzIgNy4wNSAxNi45N3oiLz48L3N2Zz4=",
-                        "sizes": "192x192",
-                        "type": "image/svg+xml"
-                    },
-                    {
-                        "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNDY0IDEyOEgyODhWODhjMC0xNy42Ny0xNC4zMy0zMi0zMi0zMmgtNjRjLTE3LjY3IDAtMzIgMTQuMzMtMzIgMzJ2NDBINDhjLTI2LjUxIDAtNDggMjEuNDktNDggNDh2Mjg4YzAgMjYuNTEgMjEuNDkgNDggNDggNDhoNDE2YzI2LjUxIDAgNDgtMjEuNDkgNDgtNDhWMTc2YzAtMjYuNTEtMjEuNDktNDgtNDgtNDh6bS05NiAxNjguNjdsLTgwIDgwYy0zLjEyIDMuMTItOC4xOSAzLjEyLTExLjMxIDBsLTgwLTgwYy02LjI1LTYuMjUtMS40Ni0xNi45NyA3LjA1LTE2Ljk3aDQ4VjE3NmMwLTguODQgNy4xNi0xNiAxNi0xNmgzMmM4Ljg0IDAgMTYgNy4xNiAxNiAxNnYxMDMuNzNoNDhjOC41MSAwIDEzLjMwIDEwLjcyIDcuMDUgMTYuOTd6Ii8+PC9zdmc+",
-                        "sizes": "512x512",
-                        "type": "image/svg+xml"
-                    }
-                ]
-            };
-            
-            const manifestString = JSON.stringify(manifest);
-            const manifestURL = 'data:application/manifest+json,' + encodeURIComponent(manifestString);
-            document.getElementById('manifest').href = manifestURL;
-        }
-        
-        // Solicitar permissão para notificações
-        async function requestNotificationPermission() {
-            if (!('Notification' in window)) {
-                showNotification('Seu navegador não suporta notificações.', true);
-                return;
-            }
-            
-            if (Notification.permission === 'granted') {
-                showNotification('Notificações já estão ativadas!', false);
-                updatePermissionStatus();
-                scheduleAllNotifications();
-                return;
-            }
-            
-            if (Notification.permission === 'denied') {
-                showNotification('Permissão para notificações foi negada. Por favor, permita nas configurações do seu navegador.', true);
-                updatePermissionStatus();
-                return;
-            }
-            
-            try {
-                const permission = await Notification.requestPermission();
-                notificationPermission = permission;
-                updatePermissionStatus();
-                
-                if (permission === 'granted') {
-                    showNotification('Notificações ativadas com sucesso!', false);
-                    scheduleAllNotifications();
-                }
-            } catch (error) {
-                console.error('Erro ao solicitar permissão:', error);
-                showNotification('Erro ao ativar notificações.', true);
-            }
-        }
-        
-        // Atualizar status da permissão
-        function updatePermissionStatus() {
-            const status = Notification.permission;
-            permissionStatus.textContent = status === 'granted' ? 
-                '✓ Notificações ativadas' : 
-                status === 'denied' ? 
-                '✗ Notificações desativadas' : 
-                '? Aguardando permissão';
-                
-            permissionStatus.className = 'permission-status ' + 
-                (status === 'granted' ? 'status-granted' : 
-                 status === 'denied' ? 'status-denied' : '');
-                 
-            permissionStatus.classList.remove('hidden');
-            
-            // Esconder botão se já tiver permissão
-            if (status === 'granted') {
-                requestPermissionBtn.style.display = 'none';
+        // Solicitar permissão silenciosamente (sem mostrar banner)
+        function requestNotificationPermissionSilently() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                // Não solicitamos automaticamente, o usuário precisa clicar no botão de teste
+                // para ativar as notificações
+                console.log('Notificações disponíveis, mas não solicitadas automaticamente');
             }
         }
         
@@ -1630,8 +1340,6 @@
                     remedyId: remedy.id,
                     time: notificationTime.getTime()
                 });
-                
-                console.log(`Notificação agendada para ${remedy.name} às ${notificationTime.toLocaleTimeString()}`);
             }
         }
         
@@ -1650,14 +1358,11 @@
             const options = {
                 body: `Hora de tomar ${remedy.name} - ${remedy.quantity} às ${formatTime(remedy.time)}`,
                 icon: 'https://cdn-icons-png.flaticon.com/512/3145/3145760.png',
-                badge: 'https://cdn-icons-png.flaticon.com/512/3145/3145760.png',
-                tag: `remedy-${remedy.id}`,
-                renotify: true,
-                requireInteraction: true,
+                tag: `remedy-${remedy.id}-${Date.now()}`,
+                requireInteraction: false,
                 vibrate: vibrationToggle.checked ? [200, 100, 200, 100, 200] : []
             };
             
-            // Usar som padrão do sistema (navegador decide)
             const notification = new Notification('HORA DO REMÉDIO!', options);
             
             notification.onclick = () => {
@@ -1666,9 +1371,10 @@
                 notification.close();
             };
             
-            notification.onclose = () => {
-                console.log('Notificação fechada');
-            };
+            // Fecha automaticamente após 30 segundos
+            setTimeout(() => {
+                notification.close();
+            }, 30000);
             
             // Reprogramar para amanhã
             const tomorrow = new Date();
@@ -1902,19 +1608,38 @@
         }
         
         function testNotification() {
-            if (notificationPermission === 'granted') {
-                const testRemedy = {
-                    id: 'test',
-                    name: "Remédio de Teste",
-                    quantity: "1 comprimido",
-                    time: new Date().toTimeString().slice(0,5)
-                };
-                
-                showPushNotification(testRemedy);
-                showNotification('Notificação de teste enviada!', false);
-            } else {
-                showNotification('Por favor, ative as notificações primeiro.', true);
+            if (!('Notification' in window)) {
+                showNotification('Seu navegador não suporta notificações.', true);
+                return;
             }
+            
+            if (Notification.permission === 'denied') {
+                showNotification('Permissão para notificações foi negada. Por favor, permita nas configurações do seu navegador.', true);
+                return;
+            }
+            
+            if (Notification.permission === 'default') {
+                // Solicitar permissão
+                Notification.requestPermission().then(permission => {
+                    notificationPermission = permission;
+                    if (permission === 'granted') {
+                        showNotification('Notificações ativadas! Agora você pode testar.', false);
+                        scheduleAllNotifications();
+                    }
+                });
+                return;
+            }
+            
+            // Já tem permissão, mostrar notificação de teste
+            const testRemedy = {
+                id: 'test',
+                name: "Remédio de Teste",
+                quantity: "1 comprimido",
+                time: new Date().toTimeString().slice(0,5)
+            };
+            
+            showPushNotification(testRemedy);
+            showNotification('Notificação de teste enviada!', false);
         }
         
         function renderRemedies() {
